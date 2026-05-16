@@ -2,10 +2,10 @@
 .cabinet {
   position: relative;
   width: min(420px, 100vw);
-  max-height: 100dvh;
   overflow-y: auto;
   overflow-x: hidden;
   scrollbar-width: none;
+  display: block;
 
   /* Wood grain */
   background:
