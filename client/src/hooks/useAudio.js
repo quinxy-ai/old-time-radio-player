@@ -1,35 +1,45 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useRadioStore } from '../stores/radioStore.js';
 
-// Manages the HTML5 Audio element and syncs playback state to the store.
+// Manages station audio + static crossfade based on signal strength.
+// Static volume  = (1 - signalStrength) * masterVolume
+// Station volume = signalStrength * masterVolume
 export function useAudio() {
-  const audioRef = useRef(null);
-  const currentEpisode = useRadioStore((s) => s.currentEpisode);
-  const isPlaying = useRadioStore((s) => s.isPlaying);
-  const volume = useRadioStore((s) => s.volume);
-  const signalStrength = useRadioStore((s) => s.signalStrength);
-  const setIsPlaying = useRadioStore((s) => s.setIsPlaying);
-  const skipNext = useRadioStore((s) => s.skipNext);
+  const audioRef  = useRef(null);
+  const staticRef = useRef(null);
 
-  // Create the audio element once
+  const currentEpisode  = useRadioStore((s) => s.currentEpisode);
+  const isPlaying       = useRadioStore((s) => s.isPlaying);
+  const volume          = useRadioStore((s) => s.volume);
+  const signalStrength  = useRadioStore((s) => s.signalStrength);
+  const setIsPlaying    = useRadioStore((s) => s.setIsPlaying);
+  const skipNext        = useRadioStore((s) => s.skipNext);
+
+  // Create both audio elements once
   useEffect(() => {
-    const audio = new Audio();
-    audio.preload = 'metadata';
-    audioRef.current = audio;
+    const station = new Audio();
+    station.preload = 'metadata';
+    audioRef.current = station;
 
     const onEnded = () => skipNext();
-    const onPlay = () => setIsPlaying(true);
+    const onPlay  = () => setIsPlaying(true);
     const onPause = () => setIsPlaying(false);
+    station.addEventListener('ended', onEnded);
+    station.addEventListener('play',  onPlay);
+    station.addEventListener('pause', onPause);
 
-    audio.addEventListener('ended', onEnded);
-    audio.addEventListener('play', onPlay);
-    audio.addEventListener('pause', onPause);
+    const noise = new Audio('/radio-static.mp3');
+    noise.loop = true;
+    noise.volume = 0;
+    noise.play().catch(() => {}); // auto-starts muted; volume driven by signalStrength
+    staticRef.current = noise;
 
     return () => {
-      audio.pause();
-      audio.removeEventListener('ended', onEnded);
-      audio.removeEventListener('play', onPlay);
-      audio.removeEventListener('pause', onPause);
+      station.pause();
+      station.removeEventListener('ended', onEnded);
+      station.removeEventListener('play',  onPlay);
+      station.removeEventListener('pause', onPause);
+      noise.pause();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -37,26 +47,24 @@ export function useAudio() {
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     if (!currentEpisode) {
       audio.pause();
       audio.src = '';
       return;
     }
-
     const wasPlaying = isPlaying;
     audio.src = currentEpisode.url;
     audio.load();
     if (wasPlaying) audio.play().catch(() => {});
   }, [currentEpisode?.url]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Sync volume — attenuate by signal strength so off-station sounds quiet
+  // Crossfade: station audio attenuates out, static fades in as signal drops
   useEffect(() => {
-    if (!audioRef.current) return;
-    audioRef.current.volume = volume * signalStrength;
+    if (audioRef.current)  audioRef.current.volume  = volume * signalStrength;
+    if (staticRef.current) staticRef.current.volume = volume * (1 - signalStrength);
   }, [volume, signalStrength]);
 
-  // Sync play/pause commanded from store
+  // Sync play/pause
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio || !currentEpisode) return;

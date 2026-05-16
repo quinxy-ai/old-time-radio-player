@@ -97,16 +97,21 @@
 .knobRow {
   display: flex;
   justify-content: space-evenly;
-  align-items: flex-start;
+  align-items: center;
   padding: 6px 14px 2px;
 }
 
-/* Scale up the centre tune knob so it reads as "big" */
+/* Volume knob — 15 % smaller than the base 58 px knob */
+.volWrap {
+  transform: scale(0.85);
+  transform-origin: center;
+}
+
+/* Tune knob — 50 % bigger than current (0.85 base → 1.275 of 58 px = ~74 px) */
 .tuneWrap {
-  transform: scale(1.22);
+  transform: scale(1.83);
   transform-origin: top center;
-  /* compensate bottom so it doesn't crowd neighbours */
-  margin-bottom: 6px;
+  margin-bottom: 14px;
 }
 
 /* Favourite jewel-lamp column matches knob column layout */
@@ -118,10 +123,10 @@
   flex: 1;
 }
 
-/* Amber jewel-lamp push-button */
+/* Amber jewel-lamp push-button — visually matches the scaled-down vol knob (~49 px) */
 .favBtn {
-  width: 46px;
-  height: 46px;
+  width: 49px;
+  height: 49px;
   border-radius: 50%;
   padding: 0;
   cursor: pointer;
@@ -177,24 +182,35 @@
   opacity: 0.75;
 }
 
-/* ── Transport row: ⏮ ▶/⏸ ⏭ ─────────────────────────── */
+/* ── Transport row: PRV PSE NXT ──────────────────────── */
 .transportRow {
   display: flex;
   justify-content: center;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 14px 14px 8px;   /* extra top padding so labels don't crowd the knob row */
+}
+
+.transportWrap {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  padding: 2px 14px 8px;
+  gap: 5px;
+}
+
+.transportLabel {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 8px;
+  letter-spacing: 2px;
+  color: var(--gold-mid);
+  text-transform: uppercase;
+  opacity: 0.7;
 }
 
 .transportBtn {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  font-size: 10px;
-  line-height: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 0;
   cursor: pointer;
   touch-action: manipulation;
@@ -206,7 +222,6 @@
     #2a1005 60%,
     #1a0800 100%
   );
-  color: rgba(255, 200, 80, 0.75);
   border: 1.5px solid #1a0800;
   outline: 1px solid rgba(255, 180, 60, 0.06);
 
@@ -227,12 +242,11 @@
   cursor: not-allowed;
 }
 
+/* PSE button glows when playing */
 .transportBtnActive {
-  color: #ff9500;
-  text-shadow: 0 0 5px rgba(255, 150, 0, 0.8);
   box-shadow:
     0 2px 6px rgba(0, 0, 0, 0.7),
-    0 0 8px rgba(255, 140, 0, 0.25),
+    0 0 8px rgba(255, 140, 0, 0.3),
     inset 0 1px 1px rgba(180, 100, 40, 0.2),
     inset 0 -1px 3px rgba(0, 0, 0, 0.6);
 }

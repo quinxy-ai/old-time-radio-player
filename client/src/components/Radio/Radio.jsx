@@ -63,12 +63,14 @@ export function Radio({
 
       {/* Knob row: Volume | Tune | Favourite lamp-button */}
       <div className={styles.knobRow}>
-        {/* Volume */}
-        <Knob
-          label="VOL"
-          value={volume}
-          onDelta={(d) => onVolumeChange(volume + d * 0.8)}
-        />
+        {/* Volume — 15 % smaller than base knob */}
+        <div className={styles.volWrap}>
+          <Knob
+            label="VOL"
+            value={volume}
+            onDelta={(d) => onVolumeChange(volume + d * 0.8)}
+          />
+        </div>
 
         {/* Tune — scaled up to be the "big" centre knob */}
         <div className={styles.tuneWrap}>
@@ -91,26 +93,35 @@ export function Radio({
         </div>
       </div>
 
-      {/* Transport row: Prev | Play/Pause | Next */}
+      {/* Transport row: Prev | Pause | Next — blank buttons, text below */}
       <div className={styles.transportRow}>
-        <button
-          className={styles.transportBtn}
-          onClick={onSkipPrev}
-          disabled={!canPlay}
-          aria-label="Previous track"
-        >⏮</button>
-        <button
-          className={`${styles.transportBtn} ${isPlaying ? styles.transportBtnActive : ''}`}
-          onClick={onTogglePlay}
-          disabled={!canPlay}
-          aria-label={isPlaying ? 'Pause' : 'Play'}
-        >{isPlaying ? '⏸' : '▶'}</button>
-        <button
-          className={styles.transportBtn}
-          onClick={onSkipNext}
-          disabled={!canPlay}
-          aria-label="Next track"
-        >⏭</button>
+        <div className={styles.transportWrap}>
+          <button
+            className={styles.transportBtn}
+            onClick={onSkipPrev}
+            disabled={!canPlay}
+            aria-label="Previous track"
+          />
+          <span className={styles.transportLabel}>PRV</span>
+        </div>
+        <div className={styles.transportWrap}>
+          <button
+            className={`${styles.transportBtn} ${isPlaying ? styles.transportBtnActive : ''}`}
+            onClick={onTogglePlay}
+            disabled={!canPlay}
+            aria-label={isPlaying ? 'Pause' : 'Play'}
+          />
+          <span className={styles.transportLabel}>PSE</span>
+        </div>
+        <div className={styles.transportWrap}>
+          <button
+            className={styles.transportBtn}
+            onClick={onSkipNext}
+            disabled={!canPlay}
+            aria-label="Next track"
+          />
+          <span className={styles.transportLabel}>NXT</span>
+        </div>
       </div>
 
       {/* Gold divider */}

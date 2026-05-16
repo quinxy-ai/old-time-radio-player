@@ -179,36 +179,29 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
           );
         })}
 
-        {/* ── Embedded signal strength indicator in dead-zone (150°–210°) ── */}
+        {/* ── Embedded S-meter in dead-zone: coloured arc scale + mechanical needle ── */}
         {(() => {
           const S_START = 153, S_SPAN = 54;
           const R_SIG = 113, SW = 7;
-          const sigEnd = S_START + signalStrength * S_SPAN;
-          const g1 = S_START + S_SPAN * 0.5;
-          const g2 = S_START + S_SPAN * 0.8;
+          const g1 = S_START + S_SPAN * 0.5;   // 50 % → 180°
+          const g2 = S_START + S_SPAN * 0.8;   // 80 % → 196.2°
+          const sigAngle = S_START + signalStrength * S_SPAN;
+          const needleTip = polar(CX, CY, 100, sigAngle);
+
           return (
             <g>
+              {/* Coloured zone arcs — background scale */}
               <path d={arcPath(CX, CY, R_SIG, S_START, g1, 1)}
-                fill="none" stroke="rgba(70,190,70,0.22)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(70,190,70,0.28)" strokeWidth={SW} strokeLinecap="butt" />
               <path d={arcPath(CX, CY, R_SIG, g1, g2, 1)}
-                fill="none" stroke="rgba(210,190,30,0.22)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(210,190,30,0.28)" strokeWidth={SW} strokeLinecap="butt" />
               <path d={arcPath(CX, CY, R_SIG, g2, S_START + S_SPAN, 1)}
-                fill="none" stroke="rgba(210,70,50,0.22)" strokeWidth={SW} strokeLinecap="butt" />
-              {signalStrength > 0.01 && (
-                <path d={arcPath(CX, CY, R_SIG, S_START, sigEnd, 1)}
-                  fill="none"
-                  stroke={
-                    signalStrength < 0.5
-                      ? 'rgba(70,210,70,0.88)'
-                      : signalStrength < 0.8
-                      ? 'rgba(230,210,30,0.88)'
-                      : 'rgba(230,70,50,0.88)'
-                  }
-                  strokeWidth={SW} strokeLinecap="butt" />
-              )}
+                fill="none" stroke="rgba(210,70,50,0.28)" strokeWidth={SW} strokeLinecap="butt" />
+
+              {/* Scale ticks at 0 %, 50 %, 100 % */}
               {[0, 0.5, 1].map((f) => {
-                const a = S_START + f * S_SPAN;
-                const o = polar(CX, CY, R_SIG + SW / 2 + 2, a);
+                const a  = S_START + f * S_SPAN;
+                const o  = polar(CX, CY, R_SIG + SW / 2 + 2, a);
                 const i2 = polar(CX, CY, R_SIG - SW / 2 - 2, a);
                 return (
                   <line key={f}
@@ -216,10 +209,33 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
                     stroke="rgba(74,48,0,0.55)" strokeWidth="1" />
                 );
               })}
+
+              {/* SIG label */}
               <text x={CX} y={CY + 126} textAnchor="middle" fontSize="5.5"
                 fill="rgba(74,48,0,0.65)" fontFamily="Georgia, serif" letterSpacing="1">
                 SIG
               </text>
+
+              {/* Armature slit — curved slot where the signal needle emerges */}
+              <path d={arcPath(CX, CY, 28, 148, 212, 1)}
+                fill="none" stroke="rgba(0,0,0,0.40)" strokeWidth="5" strokeLinecap="butt" />
+              <path d={arcPath(CX, CY, 28, 150, 210, 1)}
+                fill="none" stroke="rgba(180,140,60,0.15)" strokeWidth="1.5" strokeLinecap="butt" />
+
+              {/* Signal needle — amber, pivots from dial centre */}
+              <line
+                x1={CX} y1={CY}
+                x2={needleTip.x} y2={needleTip.y}
+                stroke="#9a7520" strokeWidth="1.4" strokeLinecap="round"
+              />
+              {/* Counterweight stub for the signal needle */}
+              {(() => {
+                const cwTip = polar(CX, CY, 18, sigAngle + 180);
+                return (
+                  <line x1={CX} y1={CY} x2={cwTip.x} y2={cwTip.y}
+                    stroke="#7a5510" strokeWidth="3" strokeLinecap="round" />
+                );
+              })()}
             </g>
           );
         })()}
