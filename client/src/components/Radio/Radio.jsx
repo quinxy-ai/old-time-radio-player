@@ -23,7 +23,6 @@ export function Radio({
   onToggleFavorite,
   onTogglePlay,
 }) {
-  // Nixie display lines
   const nixieLine1 = currentStation
     ? currentStation.name.toUpperCase()
     : signalStrength > 0
@@ -44,13 +43,10 @@ export function Radio({
         <div className={styles.brandModel}>Model OTR-1940</div>
       </div>
 
-      {/* Speaker grill */}
-      <SpeakerGrill />
-
       {/* Gold divider */}
       <div className={styles.divider} />
 
-      {/* Tuning dial */}
+      {/* Round tuning dial — centrepiece */}
       <Dial
         dialPosition={dialPosition}
         onPositionChange={onDialPositionChange}
@@ -95,18 +91,24 @@ export function Radio({
         />
       </div>
 
-      {/* Play/pause button */}
-      <button
-        className={`${styles.playBtn} ${isPlaying ? styles.playing : ''}`}
-        onClick={onTogglePlay}
-        disabled={!currentEpisode}
-        aria-label={isPlaying ? 'Pause' : 'Play'}
-      >
-        {isPlaying ? '⏸' : '▶'}
-      </button>
+      {/* Play/pause + signal meter row */}
+      <div className={styles.controlRow}>
+        <button
+          className={`${styles.playBtn} ${isPlaying ? styles.playing : ''}`}
+          onClick={onTogglePlay}
+          disabled={!currentEpisode}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+        >
+          {isPlaying ? '⏸' : '▶'}
+        </button>
+        <SignalMeter strength={signalStrength} />
+      </div>
 
-      {/* Signal meter */}
-      <SignalMeter strength={signalStrength} />
+      {/* Gold divider */}
+      <div className={styles.divider} />
+
+      {/* Speaker grill at the bottom */}
+      <SpeakerGrill />
 
       {/* Cabinet feet */}
       <div className={styles.feet}>
