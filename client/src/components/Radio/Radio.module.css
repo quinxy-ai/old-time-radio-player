@@ -250,7 +250,7 @@
   display: contents; /* transparent wrapper — children lay out as if unwrapped */
 }
 
-@media (max-height: 780px) {
+@media (max-height: 900px) {
   .grillSection { display: none; }
 
   .header   { padding: 8px 20px 4px; }

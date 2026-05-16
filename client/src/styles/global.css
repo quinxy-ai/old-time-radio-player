@@ -33,6 +33,7 @@ html, body {
 
 body {
   font-family: Georgia, 'Times New Roman', serif;
+  padding: 12px 0;
   background-color: #1a0900;
   /* Dark walnut page background */
   background-image:
