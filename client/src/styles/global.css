@@ -78,3 +78,22 @@ button {
   user-select: none;
   -webkit-user-select: none;
 }
+
+@media (max-height: 900px) {
+  body {
+    padding: 0;
+    background-color: #6B3310;
+    background-image:
+      repeating-linear-gradient(
+        89deg,
+        transparent 0px, transparent 3px,
+        rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px
+      ),
+      repeating-linear-gradient(
+        1deg,
+        transparent 0px, transparent 10px,
+        rgba(255,255,255,0.025) 10px, rgba(255,255,255,0.025) 12px
+      ),
+      linear-gradient(180deg, #8B4513 0%, #6B3310 20%, #5C2E00 60%, #4a2400 80%, #3d1c02 100%);
+  }
+}

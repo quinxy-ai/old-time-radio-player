@@ -250,14 +250,6 @@
   display: contents; /* transparent wrapper — children lay out as if unwrapped */
 }
 
-@media (max-height: 900px) {
-  .grillSection { display: none; }
-
-  .header   { padding: 8px 20px 4px; }
-  .knobRow  { padding: 6px 14px 2px; }
-  .transportRow { padding: 8px 14px 4px; }
-}
-
 /* ── Cabinet feet ─────────────────────────────────────── */
 .feet {
   display: flex;
@@ -275,4 +267,21 @@
   );
   border-radius: 0 0 10px 10px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+}
+
+@media (max-height: 900px) {
+  .grillSection { display: none; }
+
+  .header   { padding: 8px 20px 4px; }
+  .knobRow  { padding: 6px 14px 2px; }
+  .transportRow { padding: 8px 14px 4px; }
+
+  .cabinet {
+    border: none;
+    outline: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .feet { display: none; }
 }

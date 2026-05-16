@@ -45,8 +45,8 @@ export function Radio({
     <div className={styles.cabinet}>
       {/* Brand header */}
       <div className={styles.header}>
-        <div className={styles.brandName}>NOSTALGIA</div>
-        <div className={styles.brandModel}>Model OTR-1940</div>
+        <div className={styles.brandName}>OldTimeRad.io</div>
+        <div className={styles.brandModel}>Model OTR-1937</div>
       </div>
 
       {/* Gold divider */}
