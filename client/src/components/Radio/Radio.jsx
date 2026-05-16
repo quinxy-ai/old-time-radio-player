@@ -4,6 +4,9 @@ import { Knob } from '../Knob/Knob.jsx';
 import { NixieDisplay } from '../NixieDisplay/NixieDisplay.jsx';
 import styles from './Radio.module.css';
 
+const VOL_SIZE  = 49;  // 58 × 0.85 ≈ 15 % smaller
+const TUNE_SIZE = 87;  // 58 × 1.5  ≈ 50 % larger
+
 export function Radio({
   dialPosition,
   onDialPositionChange,
@@ -47,7 +50,7 @@ export function Radio({
       {/* Gold divider */}
       <div className={styles.divider} />
 
-      {/* Large round tuning dial — centrepiece display */}
+      {/* Large round tuning dial */}
       <Dial
         dialPosition={dialPosition}
         onPositionChange={onDialPositionChange}
@@ -61,39 +64,40 @@ export function Radio({
       {/* Gold divider */}
       <div className={styles.divider} />
 
-      {/* Knob row: Volume | Tune | Favourite lamp-button */}
+      {/* Knob row — each column is a plain block so Knob's internal flex:1 is contained */}
       <div className={styles.knobRow}>
-        {/* Volume — 15 % smaller than base knob */}
-        <div className={styles.volWrap}>
+        {/* Volume */}
+        <div className={styles.knobCol}>
           <Knob
             label="VOL"
             value={volume}
+            size={VOL_SIZE}
             onDelta={(d) => onVolumeChange(volume + d * 0.8)}
           />
         </div>
 
-        {/* Tune — scaled up to be the "big" centre knob */}
-        <div className={styles.tuneWrap}>
+        {/* Tune */}
+        <div className={styles.knobCol}>
           <Knob
             label="TUNE"
             value={dialPosition}
+            size={TUNE_SIZE}
             onDelta={onTuneKnobDelta}
           />
         </div>
 
-        {/* Favourite jewel-lamp button */}
-        <div className={styles.favWrap}>
+        {/* Favourite jewel-lamp */}
+        <div className={styles.knobCol}>
           <button
             className={`${styles.favBtn} ${isFavorite ? styles.favBtnOn : ''}`}
             onClick={onToggleFavorite}
             aria-label={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
-            title={isFavorite ? 'Unfavourite' : 'Favourite'}
           />
           <span className={styles.knobLabel}>FAV</span>
         </div>
       </div>
 
-      {/* Transport row: Prev | Pause | Next — blank buttons, text below */}
+      {/* Transport row — PRV PSE NXT */}
       <div className={styles.transportRow}>
         <div className={styles.transportWrap}>
           <button

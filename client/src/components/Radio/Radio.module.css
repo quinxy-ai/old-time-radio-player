@@ -98,29 +98,19 @@
   display: flex;
   justify-content: space-evenly;
   align-items: center;
-  padding: 6px 14px 2px;
+  padding: 10px 14px 4px;
 }
 
-/* Volume knob — 15 % smaller than the base 58 px knob */
-.volWrap {
-  transform: scale(0.85);
-  transform-origin: center;
-}
-
-/* Tune knob — 50 % bigger than current (0.85 base → 1.275 of 58 px = ~74 px) */
-.tuneWrap {
-  transform: scale(1.83);
-  transform-origin: top center;
-  margin-bottom: 14px;
-}
-
-/* Favourite jewel-lamp column matches knob column layout */
-.favWrap {
+/*
+ * Each column is a plain block container — this stops the Knob component's
+ * internal flex:1 wrapper from consuming extra row space.  The column sizes
+ * itself to its content (the knob circle + label).
+ */
+.knobCol {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  flex: 1;
 }
 
 /* Amber jewel-lamp push-button — visually matches the scaled-down vol knob (~49 px) */

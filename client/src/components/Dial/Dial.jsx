@@ -179,24 +179,28 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
           );
         })}
 
-        {/* ── Embedded S-meter in dead-zone: coloured arc scale + mechanical needle ── */}
+        {/* ── Embedded S-meter: arc scale + needle emerging from slit ── */}
         {(() => {
           const S_START = 153, S_SPAN = 54;
-          const R_SIG = 113, SW = 7;
-          const g1 = S_START + S_SPAN * 0.5;   // 50 % → 180°
-          const g2 = S_START + S_SPAN * 0.8;   // 80 % → 196.2°
-          const sigAngle = S_START + signalStrength * S_SPAN;
-          const needleTip = polar(CX, CY, 100, sigAngle);
+          const R_SIG  = 113, SW = 7;   // coloured arc centre radius & stroke width
+          // Slit sits just inside the inner edge of the arc (R_SIG - SW/2 - 2 = 104.5 → 104)
+          const R_SLIT = 104;
+          const g1 = S_START + S_SPAN * 0.5;  // 50 %
+          const g2 = S_START + S_SPAN * 0.8;  // 80 %
+          const sigAngle   = S_START + signalStrength * S_SPAN;
+          // Needle only visible from the slit outward; origin hidden under dial face
+          const needleBase = polar(CX, CY, R_SLIT,        sigAngle);
+          const needleTip  = polar(CX, CY, R_SIG + SW / 2 + 3, sigAngle); // tip clears arc outer edge
 
           return (
             <g>
-              {/* Coloured zone arcs — background scale */}
+              {/* Coloured zone arcs — the scale background */}
               <path d={arcPath(CX, CY, R_SIG, S_START, g1, 1)}
-                fill="none" stroke="rgba(70,190,70,0.28)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(70,190,70,0.3)" strokeWidth={SW} strokeLinecap="butt" />
               <path d={arcPath(CX, CY, R_SIG, g1, g2, 1)}
-                fill="none" stroke="rgba(210,190,30,0.28)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(210,190,30,0.3)" strokeWidth={SW} strokeLinecap="butt" />
               <path d={arcPath(CX, CY, R_SIG, g2, S_START + S_SPAN, 1)}
-                fill="none" stroke="rgba(210,70,50,0.28)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(210,70,50,0.3)" strokeWidth={SW} strokeLinecap="butt" />
 
               {/* Scale ticks at 0 %, 50 %, 100 % */}
               {[0, 0.5, 1].map((f) => {
@@ -216,26 +220,18 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
                 SIG
               </text>
 
-              {/* Armature slit — curved slot where the signal needle emerges */}
-              <path d={arcPath(CX, CY, 28, 148, 212, 1)}
-                fill="none" stroke="rgba(0,0,0,0.40)" strokeWidth="5" strokeLinecap="butt" />
-              <path d={arcPath(CX, CY, 28, 150, 210, 1)}
-                fill="none" stroke="rgba(180,140,60,0.15)" strokeWidth="1.5" strokeLinecap="butt" />
+              {/* Armature slit — the curved slot in the dial face, tight against the arc */}
+              <path d={arcPath(CX, CY, R_SLIT, S_START - 1, S_START + S_SPAN + 1, 1)}
+                fill="none" stroke="rgba(0,0,0,0.50)" strokeWidth="4" strokeLinecap="butt" />
+              <path d={arcPath(CX, CY, R_SLIT, S_START, S_START + S_SPAN, 1)}
+                fill="none" stroke="rgba(200,160,80,0.12)" strokeWidth="1.2" strokeLinecap="butt" />
 
-              {/* Signal needle — amber, pivots from dial centre */}
+              {/* Needle tip — only the portion that emerges through the slit; origin is hidden */}
               <line
-                x1={CX} y1={CY}
-                x2={needleTip.x} y2={needleTip.y}
-                stroke="#9a7520" strokeWidth="1.4" strokeLinecap="round"
+                x1={needleBase.x} y1={needleBase.y}
+                x2={needleTip.x}  y2={needleTip.y}
+                stroke="#4a2c06" strokeWidth="2.5" strokeLinecap="round"
               />
-              {/* Counterweight stub for the signal needle */}
-              {(() => {
-                const cwTip = polar(CX, CY, 18, sigAngle + 180);
-                return (
-                  <line x1={CX} y1={CY} x2={cwTip.x} y2={cwTip.y}
-                    stroke="#7a5510" strokeWidth="3" strokeLinecap="round" />
-                );
-              })()}
             </g>
           );
         })()}
