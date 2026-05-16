@@ -9,7 +9,7 @@
 
 .dialSvg {
   width: 100%;
-  max-width: 300px;
+  max-width: min(300px, 72vmin);
   height: auto;
   aspect-ratio: 1 / 1;
   cursor: grab;

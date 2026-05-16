@@ -4,8 +4,10 @@ import { Knob } from '../Knob/Knob.jsx';
 import { NixieDisplay } from '../NixieDisplay/NixieDisplay.jsx';
 import styles from './Radio.module.css';
 
-const VOL_SIZE  = 49;   // 58 × 0.85 ≈ 15 % smaller
-const TUNE_SIZE = 174;  // twice the previous 87 px
+const VOL_SIZE = 49;
+// Scale TUNE knob to 22 % of viewport height, capped at 174 px.
+// This keeps the knob row from overflowing on short phone screens.
+const TUNE_SIZE = Math.min(174, Math.max(100, Math.round(window.innerHeight * 0.22)));
 
 export function Radio({
   dialPosition,
@@ -128,11 +130,11 @@ export function Radio({
         </div>
       </div>
 
-      {/* Gold divider */}
-      <div className={styles.divider} />
-
-      {/* Speaker grill */}
-      <SpeakerGrill />
+      {/* Speaker grill — hidden on short screens via CSS */}
+      <div className={styles.grillSection}>
+        <div className={styles.divider} />
+        <SpeakerGrill />
+      </div>
 
       {/* Cabinet feet */}
       <div className={styles.feet}>

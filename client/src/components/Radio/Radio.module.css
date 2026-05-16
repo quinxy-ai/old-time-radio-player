@@ -245,6 +245,19 @@
     inset 0 -1px 3px rgba(0, 0, 0, 0.6);
 }
 
+/* ── Grill section (divider + grill) — hidden on short screens ── */
+.grillSection {
+  display: contents; /* transparent wrapper — children lay out as if unwrapped */
+}
+
+@media (max-height: 780px) {
+  .grillSection { display: none; }
+
+  .header   { padding: 8px 20px 4px; }
+  .knobRow  { padding: 6px 14px 2px; }
+  .transportRow { padding: 8px 14px 4px; }
+}
+
 /* ── Cabinet feet ─────────────────────────────────────── */
 .feet {
   display: flex;
