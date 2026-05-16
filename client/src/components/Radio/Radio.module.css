@@ -93,22 +93,148 @@
   border-radius: 1px;
 }
 
-/* ── Dial row: Volume | Round Dial | Button Cluster ───── */
-.dialRow {
+/* ── Knob row: Volume | Tune | Fav lamp ──────────────── */
+.knobRow {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 4px 10px 6px;
-  width: 100%;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  padding: 6px 14px 2px;
 }
 
-/* Wrapper prevents Volume Knob's flex:1 from consuming the row */
-.knobWrap {
-  flex-shrink: 0;
+/* Scale up the centre tune knob so it reads as "big" */
+.tuneWrap {
+  transform: scale(1.22);
+  transform-origin: top center;
+  /* compensate bottom so it doesn't crowd neighbours */
+  margin-bottom: 6px;
+}
+
+/* Favourite jewel-lamp column matches knob column layout */
+.favWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+/* Amber jewel-lamp push-button */
+.favBtn {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+
+  /* Bakelite surround via thick border */
+  border: 5px solid #1e0d00;
+  outline: 1px solid rgba(255, 180, 60, 0.08);
+  outline-offset: 3px;
+
+  /* Dark glass dome — off state */
+  background: radial-gradient(
+    circle at 38% 32%,
+    #3a2010 0%,
+    #1a0a00 55%,
+    #0e0500 100%
+  );
+
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.75),
+    inset 0 1px 2px rgba(80, 40, 10, 0.25),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.6);
+
+  transition: background 0.25s, box-shadow 0.3s;
+}
+
+.favBtn:active {
+  transform: scale(0.95);
+}
+
+/* Lit amber state */
+.favBtnOn {
+  background: radial-gradient(
+    circle at 38% 30%,
+    #fff0a0 0%,
+    #ffbb00 35%,
+    #dd7700 70%,
+    #993300 100%
+  );
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.75),
+    0 0 14px rgba(255, 190, 0, 0.75),
+    0 0 28px rgba(255, 130, 0, 0.4),
+    inset 0 1px 4px rgba(255, 240, 120, 0.6),
+    inset 0 -2px 5px rgba(120, 50, 0, 0.35);
+}
+
+.knobLabel {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--gold-mid);
+  text-transform: uppercase;
+  opacity: 0.75;
+}
+
+/* ── Transport row: ⏮ ▶/⏸ ⏭ ─────────────────────────── */
+.transportRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  padding: 2px 14px 8px;
+}
+
+.transportBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  font-size: 10px;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+
+  background: radial-gradient(
+    circle at 35% 30%,
+    #7a3f18 0%,
+    #4a2010 30%,
+    #2a1005 60%,
+    #1a0800 100%
+  );
+  color: rgba(255, 200, 80, 0.75);
+  border: 1.5px solid #1a0800;
+  outline: 1px solid rgba(255, 180, 60, 0.06);
+
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.7),
+    inset 0 1px 1px rgba(180, 100, 40, 0.2),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.6);
+
+  transition: box-shadow 0.1s, transform 0.05s;
+}
+
+.transportBtn:active:not(:disabled) {
+  transform: scale(0.88);
+}
+
+.transportBtn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.transportBtnActive {
+  color: #ff9500;
+  text-shadow: 0 0 5px rgba(255, 150, 0, 0.8);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.7),
+    0 0 8px rgba(255, 140, 0, 0.25),
+    inset 0 1px 1px rgba(180, 100, 40, 0.2),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.6);
 }
 
 /* ── Cabinet feet ─────────────────────────────────────── */

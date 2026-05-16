@@ -2,7 +2,6 @@ import { SpeakerGrill } from '../SpeakerGrill/SpeakerGrill.jsx';
 import { Dial } from '../Dial/Dial.jsx';
 import { Knob } from '../Knob/Knob.jsx';
 import { NixieDisplay } from '../NixieDisplay/NixieDisplay.jsx';
-import { ButtonCluster } from '../ButtonCluster/ButtonCluster.jsx';
 import styles from './Radio.module.css';
 
 export function Radio({
@@ -35,6 +34,8 @@ export function Radio({
     ? currentEpisode.title.toUpperCase()
     : '';
 
+  const canPlay = Boolean(currentEpisode);
+
   return (
     <div className={styles.cabinet}>
       {/* Brand header */}
@@ -46,47 +47,76 @@ export function Radio({
       {/* Gold divider */}
       <div className={styles.divider} />
 
+      {/* Large round tuning dial — centrepiece display */}
+      <Dial
+        dialPosition={dialPosition}
+        onPositionChange={onDialPositionChange}
+        stations={stations}
+        signalStrength={signalStrength}
+      />
+
       {/* Nixie tube display */}
       <NixieDisplay line1={nixieLine1} line2={nixieLine2} />
 
       {/* Gold divider */}
       <div className={styles.divider} />
 
-      {/* Dial row: Volume | Round Dial | Button Cluster */}
-      <div className={styles.dialRow}>
-        {/* Volume knob — left */}
-        <div className={styles.knobWrap}>
+      {/* Knob row: Volume | Tune | Favourite lamp-button */}
+      <div className={styles.knobRow}>
+        {/* Volume */}
+        <Knob
+          label="VOL"
+          value={volume}
+          onDelta={(d) => onVolumeChange(volume + d * 0.8)}
+        />
+
+        {/* Tune — scaled up to be the "big" centre knob */}
+        <div className={styles.tuneWrap}>
           <Knob
-            label="VOL"
-            value={volume}
-            onDelta={(d) => onVolumeChange(volume + d * 0.8)}
+            label="TUNE"
+            value={dialPosition}
+            onDelta={onTuneKnobDelta}
           />
         </div>
 
-        {/* Large round tuning dial — centre */}
-        <Dial
-          dialPosition={dialPosition}
-          onPositionChange={onDialPositionChange}
-          stations={stations}
-          signalStrength={signalStrength}
-        />
+        {/* Favourite jewel-lamp button */}
+        <div className={styles.favWrap}>
+          <button
+            className={`${styles.favBtn} ${isFavorite ? styles.favBtnOn : ''}`}
+            onClick={onToggleFavorite}
+            aria-label={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
+            title={isFavorite ? 'Unfavourite' : 'Favourite'}
+          />
+          <span className={styles.knobLabel}>FAV</span>
+        </div>
+      </div>
 
-        {/* Button cluster — right */}
-        <ButtonCluster
-          isPlaying={isPlaying}
-          currentEpisode={currentEpisode}
-          isFavorite={isFavorite}
-          onTogglePlay={onTogglePlay}
-          onSkipNext={onSkipNext}
-          onSkipPrev={onSkipPrev}
-          onToggleFavorite={onToggleFavorite}
-        />
+      {/* Transport row: Prev | Play/Pause | Next */}
+      <div className={styles.transportRow}>
+        <button
+          className={styles.transportBtn}
+          onClick={onSkipPrev}
+          disabled={!canPlay}
+          aria-label="Previous track"
+        >⏮</button>
+        <button
+          className={`${styles.transportBtn} ${isPlaying ? styles.transportBtnActive : ''}`}
+          onClick={onTogglePlay}
+          disabled={!canPlay}
+          aria-label={isPlaying ? 'Pause' : 'Play'}
+        >{isPlaying ? '⏸' : '▶'}</button>
+        <button
+          className={styles.transportBtn}
+          onClick={onSkipNext}
+          disabled={!canPlay}
+          aria-label="Next track"
+        >⏭</button>
       </div>
 
       {/* Gold divider */}
       <div className={styles.divider} />
 
-      {/* Speaker grill at the bottom */}
+      {/* Speaker grill */}
       <SpeakerGrill />
 
       {/* Cabinet feet */}
