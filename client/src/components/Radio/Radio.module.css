@@ -1,0 +1,179 @@
+/* ── Cabinet body ─────────────────────────────────────── */
+.cabinet {
+  position: relative;
+  width: min(420px, 100vw);
+  max-height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: none;
+
+  /* Wood grain */
+  background:
+    repeating-linear-gradient(
+      89deg,
+      transparent 0px, transparent 3px,
+      rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px
+    ),
+    repeating-linear-gradient(
+      1deg,
+      transparent 0px, transparent 10px,
+      rgba(255,255,255,0.025) 10px, rgba(255,255,255,0.025) 12px
+    ),
+    linear-gradient(180deg,
+      #8B4513 0%,
+      #6B3310 20%,
+      #5C2E00 60%,
+      #4a2400 80%,
+      #3d1c02 100%
+    );
+
+  /* Cabinet shape */
+  border-radius: 24px 24px 16px 16px;
+
+  /* Outer gold bevel */
+  border: 1px solid #6B4510;
+  outline: 3px solid #8B6014;
+  outline-offset: -1px;
+  box-shadow:
+    0 0 0 5px #3d1c02,
+    0 0 0 7px rgba(200, 160, 60, 0.3),
+    0 12px 40px rgba(0, 0, 0, 0.8),
+    0 4px 12px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 200, 80, 0.15),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.4);
+
+  padding-bottom: 8px;
+}
+
+.cabinet::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Brand header ─────────────────────────────────────── */
+.header {
+  text-align: center;
+  padding: 16px 20px 10px;
+  border-bottom: 1px solid rgba(200, 160, 60, 0.2);
+}
+
+.brandName {
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 8px;
+  color: var(--gold-light);
+  text-shadow:
+    0 1px 2px rgba(0,0,0,0.8),
+    0 0 12px rgba(255, 200, 60, 0.3);
+
+  /* Art deco inline borders */
+  position: relative;
+}
+
+.brandName::before,
+.brandName::after {
+  content: '◆';
+  font-size: 10px;
+  margin: 0 8px;
+  color: var(--gold-mid);
+  vertical-align: middle;
+}
+
+.brandModel {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: var(--gold-mid);
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+/* ── Gold divider ─────────────────────────────────────── */
+.divider {
+  height: 2px;
+  margin: 4px 14px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold-dark) 15%,
+    var(--gold-light) 50%,
+    var(--gold-dark) 85%,
+    transparent
+  );
+  border-radius: 1px;
+}
+
+/* ── Knob row ─────────────────────────────────────────── */
+.knobRow {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  padding: 10px 14px 4px;
+}
+
+/* ── Play/pause button ───────────────────────────────── */
+.playBtn {
+  display: block;
+  margin: 6px auto 2px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  font-size: 16px;
+  line-height: 44px;
+  text-align: center;
+  padding: 0;
+
+  background: radial-gradient(
+    circle at 38% 35%,
+    #5a2a0a,
+    #2a1005 50%,
+    #1a0800
+  );
+  color: var(--gold-light);
+  border: 2px solid #5a3800;
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.6),
+    inset 0 1px 2px rgba(200,120,40,0.2);
+  cursor: pointer;
+  transition: box-shadow 0.1s, transform 0.05s;
+}
+
+.playBtn:hover:not(:disabled) {
+  box-shadow:
+    0 3px 8px rgba(0,0,0,0.6),
+    0 0 10px rgba(255,150,0,0.2),
+    inset 0 1px 2px rgba(200,120,40,0.2);
+}
+
+.playBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.playBtn.playing {
+  color: #ff9500;
+  text-shadow: 0 0 8px rgba(255,150,0,0.6);
+}
+
+.playBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* ── Cabinet feet ─────────────────────────────────────── */
+.feet {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 30px 0;
+}
+
+.foot {
+  width: 40px;
+  height: 10px;
+  background: radial-gradient(
+    ellipse at 50% 0%,
+    #5a3010,
+    #2a1005
+  );
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.6);
+}

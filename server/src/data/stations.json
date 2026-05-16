@@ -1,0 +1,100 @@
+{
+  "stations": [
+    {
+      "id": "favorites",
+      "type": "favorites",
+      "name": "Your Favorites",
+      "frequency": 560
+    },
+    {
+      "id": "genre-mystery",
+      "type": "genre",
+      "name": "Mystery & Detective",
+      "frequency": 900,
+      "shows": [
+        { "name": "The Shadow", "searchQuery": "The Shadow radio show" },
+        { "name": "Adventures of Sam Spade", "searchQuery": "Sam Spade detective radio" },
+        { "name": "Yours Truly Johnny Dollar", "searchQuery": "Johnny Dollar radio" },
+        { "name": "Boston Blackie", "searchQuery": "Boston Blackie radio" },
+        { "name": "Nero Wolfe", "searchQuery": "Nero Wolfe radio mysteries" },
+        { "name": "Philip Marlowe", "searchQuery": "Philip Marlowe radio detective" }
+      ]
+    },
+    {
+      "id": "genre-comedy",
+      "type": "genre",
+      "name": "Comedy",
+      "frequency": 970,
+      "shows": [
+        { "name": "Jack Benny Program", "searchQuery": "Jack Benny Program radio" },
+        { "name": "Burns and Allen", "searchQuery": "George Burns Gracie Allen radio" },
+        { "name": "Fibber McGee and Molly", "searchQuery": "Fibber McGee Molly radio" },
+        { "name": "The Great Gildersleeve", "searchQuery": "Great Gildersleeve radio" },
+        { "name": "Abbott and Costello", "searchQuery": "Abbott Costello radio program" }
+      ]
+    },
+    {
+      "id": "genre-western",
+      "type": "genre",
+      "name": "Western",
+      "frequency": 1050,
+      "shows": [
+        { "name": "Gunsmoke", "searchQuery": "Gunsmoke CBS radio western" },
+        { "name": "The Lone Ranger", "searchQuery": "Lone Ranger radio show" },
+        { "name": "Have Gun Will Travel", "searchQuery": "Have Gun Will Travel radio" },
+        { "name": "Red Ryder", "searchQuery": "Red Ryder radio adventures" }
+      ]
+    },
+    {
+      "id": "genre-thriller",
+      "type": "genre",
+      "name": "Thriller & Horror",
+      "frequency": 1120,
+      "shows": [
+        { "name": "Suspense", "searchQuery": "Suspense CBS radio thriller" },
+        { "name": "Inner Sanctum Mysteries", "searchQuery": "Inner Sanctum radio mysteries" },
+        { "name": "Lights Out", "searchQuery": "Lights Out radio horror" },
+        { "name": "Escape", "searchQuery": "Escape CBS radio adventure" }
+      ]
+    },
+    {
+      "id": "genre-scifi",
+      "type": "genre",
+      "name": "Science Fiction",
+      "frequency": 1200,
+      "shows": [
+        { "name": "X Minus One", "searchQuery": "X Minus One NBC radio science fiction" },
+        { "name": "Dimension X", "searchQuery": "Dimension X NBC radio" },
+        { "name": "2000 Plus", "searchQuery": "2000 Plus radio science fiction" }
+      ]
+    },
+    {
+      "id": "genre-adventure",
+      "type": "genre",
+      "name": "Adventure",
+      "frequency": 1270,
+      "shows": [
+        { "name": "Adventures of Superman", "searchQuery": "Adventures of Superman radio" },
+        { "name": "The Green Hornet", "searchQuery": "Green Hornet radio show" },
+        { "name": "Challenge of the Yukon", "searchQuery": "Sergeant Preston Yukon radio" }
+      ]
+    },
+    {
+      "id": "genre-theatre",
+      "type": "genre",
+      "name": "Radio Theatre",
+      "frequency": 1350,
+      "shows": [
+        { "name": "Lux Radio Theatre", "searchQuery": "Lux Radio Theatre CBS" },
+        { "name": "Mercury Theatre on the Air", "searchQuery": "Mercury Theatre Orson Welles radio" },
+        { "name": "Screen Guild Theatre", "searchQuery": "Screen Guild Theatre radio" }
+      ]
+    },
+    {
+      "id": "misc",
+      "type": "misc",
+      "name": "The Golden Age",
+      "frequency": 1490
+    }
+  ]
+}
