@@ -4,8 +4,8 @@ import { Knob } from '../Knob/Knob.jsx';
 import { NixieDisplay } from '../NixieDisplay/NixieDisplay.jsx';
 import styles from './Radio.module.css';
 
-const VOL_SIZE  = 49;  // 58 × 0.85 ≈ 15 % smaller
-const TUNE_SIZE = 87;  // 58 × 1.5  ≈ 50 % larger
+const VOL_SIZE  = 49;   // 58 × 0.85 ≈ 15 % smaller
+const TUNE_SIZE = 174;  // twice the previous 87 px
 
 export function Radio({
   dialPosition,

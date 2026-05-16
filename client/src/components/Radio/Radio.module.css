@@ -113,30 +113,32 @@
   gap: 6px;
 }
 
-/* Amber jewel-lamp push-button — visually matches the scaled-down vol knob (~49 px) */
+/* Amber jewel-lamp push-button — same outer diameter as VOL knob (49 px).
+   Bakelite surround is painted via gradient (no thick border eating into the size). */
 .favBtn {
   width: 49px;
   height: 49px;
   border-radius: 50%;
   padding: 0;
   cursor: pointer;
+  border: 2px solid #1a0800;
+  outline: 1px solid rgba(255, 180, 60, 0.07);
+  outline-offset: 2px;
 
-  /* Bakelite surround via thick border */
-  border: 5px solid #1e0d00;
-  outline: 1px solid rgba(255, 180, 60, 0.08);
-  outline-offset: 3px;
-
-  /* Dark glass dome — off state */
+  /* Dark glass dome recessed inside a bakelite ring */
   background: radial-gradient(
-    circle at 38% 32%,
-    #3a2010 0%,
-    #1a0a00 55%,
-    #0e0500 100%
+    circle at 50% 50%,
+    #2a1508  0%,
+    #180900 55%,
+    #0e0500 62%,
+    #3a1c08 62%,
+    #5a2e10 72%,
+    #3a1808 100%
   );
 
   box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.75),
-    inset 0 1px 2px rgba(80, 40, 10, 0.25),
+    0 4px 12px rgba(0, 0, 0, 0.75),
+    inset 0 1px 3px rgba(180, 100, 40, 0.15),
     inset 0 -2px 5px rgba(0, 0, 0, 0.6);
 
   transition: background 0.25s, box-shadow 0.3s;
@@ -149,18 +151,20 @@
 /* Lit amber state */
 .favBtnOn {
   background: radial-gradient(
-    circle at 38% 30%,
-    #fff0a0 0%,
-    #ffbb00 35%,
-    #dd7700 70%,
-    #993300 100%
+    circle at 40% 35%,
+    #fff5b0  0%,
+    #ffcc00 42%,
+    #dd7700 60%,
+    #3a1c08 62%,
+    #5a2e10 72%,
+    #3a1808 100%
   );
   box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.75),
-    0 0 14px rgba(255, 190, 0, 0.75),
-    0 0 28px rgba(255, 130, 0, 0.4),
-    inset 0 1px 4px rgba(255, 240, 120, 0.6),
-    inset 0 -2px 5px rgba(120, 50, 0, 0.35);
+    0 4px 12px rgba(0, 0, 0, 0.75),
+    0 0 14px rgba(255, 190, 0, 0.8),
+    0 0 30px rgba(255, 130, 0, 0.45),
+    inset 0 1px 4px rgba(255, 240, 120, 0.5),
+    inset 0 -2px 5px rgba(120, 50, 0, 0.3);
 }
 
 .knobLabel {

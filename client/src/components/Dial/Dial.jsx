@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { useKnob } from '../../hooks/useKnob.js';
 import styles from './Dial.module.css';
 
@@ -65,6 +66,25 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
     const next = Math.max(0, Math.min(1, dialPosition + delta * TUNING_SENSITIVITY));
     onPositionChange(next);
   });
+
+  // Needle wiggle — damped random walk, only active when signal is present
+  const wiggleVel = useRef(0);
+  const [wiggleDeg, setWiggleDeg] = useState(0);
+  const isActive = signalStrength > 0.01;
+  useEffect(() => {
+    if (!isActive) { wiggleVel.current = 0; setWiggleDeg(0); return; }
+    const id = setInterval(() => {
+      // Impulse ± scaled by signal strength; 60 % velocity retention gives inertia
+      wiggleVel.current = wiggleVel.current * 0.60 + (Math.random() - 0.5) * 3 * signalStrength;
+      setWiggleDeg(v => {
+        const next = v + wiggleVel.current;
+        // Soft-clamp so needle stays near the arc
+        wiggleVel.current *= next > 4 || next < -4 ? -0.5 : 1;
+        return Math.max(-5, Math.min(5, next));
+      });
+    }, 90);
+    return () => clearInterval(id);
+  }, [isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const tip  = polar(CX, CY, R_NEEDLE, needleAngle);
   const tail = polar(CX, CY, R_TAIL,   needleAngle + 180);
@@ -185,9 +205,10 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
           const R_SIG  = 113, SW = 7;   // coloured arc centre radius & stroke width
           // Slit sits just inside the inner edge of the arc (R_SIG - SW/2 - 2 = 104.5 → 104)
           const R_SLIT = 104;
-          const g1 = S_START + S_SPAN * 0.5;  // 50 %
-          const g2 = S_START + S_SPAN * 0.8;  // 80 %
-          const sigAngle   = S_START + signalStrength * S_SPAN;
+          const g1 = S_START + S_SPAN * 0.25;  // 25 % — red/yellow boundary
+          const g2 = S_START + S_SPAN * 0.50;  // 50 % — yellow/green boundary
+          const sigAngle   = Math.max(S_START, Math.min(S_START + S_SPAN,
+                               S_START + signalStrength * S_SPAN + wiggleDeg));
           // Needle only visible from the slit outward; origin hidden under dial face
           const needleBase = polar(CX, CY, R_SLIT,        sigAngle);
           const needleTip  = polar(CX, CY, R_SIG + SW / 2 + 3, sigAngle); // tip clears arc outer edge
@@ -196,11 +217,11 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
             <g>
               {/* Coloured zone arcs — the scale background */}
               <path d={arcPath(CX, CY, R_SIG, S_START, g1, 1)}
-                fill="none" stroke="rgba(70,190,70,0.3)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(220,55,35,0.55)" strokeWidth={SW} strokeLinecap="butt" />
               <path d={arcPath(CX, CY, R_SIG, g1, g2, 1)}
-                fill="none" stroke="rgba(210,190,30,0.3)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(220,185,0,0.55)" strokeWidth={SW} strokeLinecap="butt" />
               <path d={arcPath(CX, CY, R_SIG, g2, S_START + S_SPAN, 1)}
-                fill="none" stroke="rgba(210,70,50,0.3)" strokeWidth={SW} strokeLinecap="butt" />
+                fill="none" stroke="rgba(50,190,50,0.55)" strokeWidth={SW} strokeLinecap="butt" />
 
               {/* Scale ticks at 0 %, 50 %, 100 % */}
               {[0, 0.5, 1].map((f) => {
@@ -222,15 +243,17 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
 
               {/* Armature slit — the curved slot in the dial face, tight against the arc */}
               <path d={arcPath(CX, CY, R_SLIT, S_START - 1, S_START + S_SPAN + 1, 1)}
-                fill="none" stroke="rgba(0,0,0,0.50)" strokeWidth="4" strokeLinecap="butt" />
+                fill="none" stroke="rgba(0,0,0,0.80)" strokeWidth="5" strokeLinecap="butt" />
+              <path d={arcPath(CX, CY, R_SLIT, S_START - 1, S_START + S_SPAN + 1, 1)}
+                fill="none" stroke="rgba(0,0,0,0.45)" strokeWidth="9" strokeLinecap="butt" />
               <path d={arcPath(CX, CY, R_SLIT, S_START, S_START + S_SPAN, 1)}
-                fill="none" stroke="rgba(200,160,80,0.12)" strokeWidth="1.2" strokeLinecap="butt" />
+                fill="none" stroke="rgba(180,130,50,0.10)" strokeWidth="1.2" strokeLinecap="butt" />
 
               {/* Needle tip — only the portion that emerges through the slit; origin is hidden */}
               <line
                 x1={needleBase.x} y1={needleBase.y}
                 x2={needleTip.x}  y2={needleTip.y}
-                stroke="#4a2c06" strokeWidth="2.5" strokeLinecap="round"
+                stroke="#cc1111" strokeWidth="2.5" strokeLinecap="round"
               />
             </g>
           );

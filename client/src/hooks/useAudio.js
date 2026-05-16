@@ -1,9 +1,20 @@
 import { useEffect, useRef, useCallback } from 'react';
 import { useRadioStore } from '../stores/radioStore.js';
 
-// Manages station audio + static crossfade based on signal strength.
-// Static volume  = (1 - signalStrength) * masterVolume
-// Station volume = signalStrength * masterVolume
+// Zone boundaries (fraction of signalStrength 0–1) must match Dial.jsx S-meter zones.
+// Red  0.00–0.25 → all static, no station
+// Yellow 0.25–0.50 → linear mix
+// Green  0.50–1.00 → all station, no static
+const YELLOW_START = 0.25;
+const GREEN_START  = 0.50;
+
+function signalToMix(strength) {
+  if (strength <= YELLOW_START) return { stationFrac: 0, staticFrac: 1 };
+  if (strength >= GREEN_START)  return { stationFrac: 1, staticFrac: 0 };
+  const t = (strength - YELLOW_START) / (GREEN_START - YELLOW_START);
+  return { stationFrac: t, staticFrac: 1 - t };
+}
+
 export function useAudio() {
   const audioRef  = useRef(null);
   const staticRef = useRef(null);
@@ -31,7 +42,6 @@ export function useAudio() {
     const noise = new Audio('/radio-static.mp3');
     noise.loop = true;
     noise.volume = 0;
-    noise.play().catch(() => {}); // auto-starts muted; volume driven by signalStrength
     staticRef.current = noise;
 
     return () => {
@@ -58,10 +68,19 @@ export function useAudio() {
     if (wasPlaying) audio.play().catch(() => {});
   }, [currentEpisode?.url]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Crossfade: station audio attenuates out, static fades in as signal drops
+  // Zone-aware crossfade. Static is started lazily here — this effect fires on user
+  // interaction (tuning/volume change), satisfying the browser autoplay policy.
+  // We retry static.play() on every tick while it's paused so a prior autoplay
+  // rejection doesn't permanently silence it.
   useEffect(() => {
-    if (audioRef.current)  audioRef.current.volume  = volume * signalStrength;
-    if (staticRef.current) staticRef.current.volume = volume * (1 - signalStrength);
+    const { stationFrac, staticFrac } = signalToMix(signalStrength);
+    if (audioRef.current)  audioRef.current.volume  = volume * stationFrac;
+    if (staticRef.current) {
+      staticRef.current.volume = volume * staticFrac;
+      if (staticRef.current.paused) {
+        staticRef.current.play().catch(() => {});
+      }
+    }
   }, [volume, signalStrength]);
 
   // Sync play/pause

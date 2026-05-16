@@ -43,12 +43,20 @@ export default function App() {
 
   // When the active station changes, load its episode queue
   useEffect(() => {
-    if (!currentStation) return;
+    if (!currentStation) {
+      // Tuned away — let the crossfade fade the audio naturally; don't cut the episode.
+      // Reset the tracker so we reload if the user returns to the same station.
+      loadedStationRef.current = null;
+      return;
+    }
+
     if (loadedStationRef.current === currentStation.id) return;
     loadedStationRef.current = currentStation.id;
 
+    // Switching to a different station — stop the old audio immediately.
+    setEpisodeQueue([]);
+
     if (currentStation.type === 'favorites') {
-      // Favorites are stored locally; shuffle them
       const shuffled = [...favorites].sort(() => Math.random() - 0.5);
       setEpisodeQueue(shuffled);
       return;
@@ -59,20 +67,12 @@ export default function App() {
       .then((episodes) => {
         if (episodes.length > 0) {
           setEpisodeQueue(episodes);
-          // Auto-play when tuning in
           setIsPlaying(true);
         }
       })
       .catch((err) => console.error('Failed to load episodes:', err))
       .finally(() => setIsLoadingEpisodes(false));
   }, [currentStation?.id]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // When tuning away from a station, reset loaded tracker so it reloads on return
-  useEffect(() => {
-    if (!currentStation) {
-      loadedStationRef.current = null;
-    }
-  }, [currentStation]);
 
   function handleTuneKnobDelta(normalizedDelta) {
     nudgeDialPosition(normalizedDelta * TUNING_SENSITIVITY);
