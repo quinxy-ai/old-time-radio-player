@@ -57,7 +57,7 @@ function textAnchor(angleDeg) {
   return 'middle';
 }
 
-export function Dial({ dialPosition, onPositionChange, stations = [] }) {
+export function Dial({ dialPosition, onPositionChange, stations = [], signalStrength = 0 }) {
   const needleAngle = freqToAngle(FREQ_MIN + dialPosition * (FREQ_MAX - FREQ_MIN));
   const frequency = Math.round(FREQ_MIN + dialPosition * (FREQ_MAX - FREQ_MIN));
 
@@ -179,6 +179,51 @@ export function Dial({ dialPosition, onPositionChange, stations = [] }) {
           );
         })}
 
+        {/* ── Embedded signal strength indicator in dead-zone (150°–210°) ── */}
+        {(() => {
+          const S_START = 153, S_SPAN = 54;
+          const R_SIG = 113, SW = 7;
+          const sigEnd = S_START + signalStrength * S_SPAN;
+          const g1 = S_START + S_SPAN * 0.5;
+          const g2 = S_START + S_SPAN * 0.8;
+          return (
+            <g>
+              <path d={arcPath(CX, CY, R_SIG, S_START, g1, 1)}
+                fill="none" stroke="rgba(70,190,70,0.22)" strokeWidth={SW} strokeLinecap="butt" />
+              <path d={arcPath(CX, CY, R_SIG, g1, g2, 1)}
+                fill="none" stroke="rgba(210,190,30,0.22)" strokeWidth={SW} strokeLinecap="butt" />
+              <path d={arcPath(CX, CY, R_SIG, g2, S_START + S_SPAN, 1)}
+                fill="none" stroke="rgba(210,70,50,0.22)" strokeWidth={SW} strokeLinecap="butt" />
+              {signalStrength > 0.01 && (
+                <path d={arcPath(CX, CY, R_SIG, S_START, sigEnd, 1)}
+                  fill="none"
+                  stroke={
+                    signalStrength < 0.5
+                      ? 'rgba(70,210,70,0.88)'
+                      : signalStrength < 0.8
+                      ? 'rgba(230,210,30,0.88)'
+                      : 'rgba(230,70,50,0.88)'
+                  }
+                  strokeWidth={SW} strokeLinecap="butt" />
+              )}
+              {[0, 0.5, 1].map((f) => {
+                const a = S_START + f * S_SPAN;
+                const o = polar(CX, CY, R_SIG + SW / 2 + 2, a);
+                const i2 = polar(CX, CY, R_SIG - SW / 2 - 2, a);
+                return (
+                  <line key={f}
+                    x1={o.x} y1={o.y} x2={i2.x} y2={i2.y}
+                    stroke="rgba(74,48,0,0.55)" strokeWidth="1" />
+                );
+              })}
+              <text x={CX} y={CY + 126} textAnchor="middle" fontSize="5.5"
+                fill="rgba(74,48,0,0.65)" fontFamily="Georgia, serif" letterSpacing="1">
+                SIG
+              </text>
+            </g>
+          );
+        })()}
+
         {/* ── Station dots ── */}
         {stations.map((s) => {
           const a = freqToAngle(s.frequency);
@@ -219,11 +264,6 @@ export function Dial({ dialPosition, onPositionChange, stations = [] }) {
         />
       </svg>
 
-      {/* Frequency readout below the dial */}
-      <div className={styles.freqReadout}>
-        <span className={styles.freqValue}>{frequency}</span>
-        <span className={styles.freqUnit}>kHz AM</span>
-      </div>
     </div>
   );
 }

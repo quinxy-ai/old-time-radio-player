@@ -93,67 +93,22 @@
   border-radius: 1px;
 }
 
-/* ── Knob row ─────────────────────────────────────────── */
-.knobRow {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: flex-start;
-  padding: 8px 14px 4px;
-}
-
-/* ── Play/pause + signal meter ───────────────────────── */
-.controlRow {
+/* ── Dial row: Volume | Round Dial | Button Cluster ───── */
+.dialRow {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  padding: 4px 14px 6px;
+  gap: 8px;
+  padding: 4px 10px 6px;
+  width: 100%;
 }
 
-.playBtn {
+/* Wrapper prevents Volume Knob's flex:1 from consuming the row */
+.knobWrap {
   flex-shrink: 0;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  font-size: 18px;
-  line-height: 48px;
-  text-align: center;
-  padding: 0;
-
-  background: radial-gradient(
-    circle at 38% 35%,
-    #5a2a0a,
-    #2a1005 50%,
-    #1a0800
-  );
-  color: var(--gold-light);
-  border: 2px solid #5a3800;
-  box-shadow:
-    0 3px 8px rgba(0,0,0,0.6),
-    inset 0 1px 2px rgba(200,120,40,0.2);
-  cursor: pointer;
-  transition: box-shadow 0.1s, transform 0.05s;
-}
-
-.playBtn:hover:not(:disabled) {
-  box-shadow:
-    0 3px 8px rgba(0,0,0,0.6),
-    0 0 10px rgba(255,150,0,0.2),
-    inset 0 1px 2px rgba(200,120,40,0.2);
-}
-
-.playBtn:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
-.playBtn.playing {
-  color: #ff9500;
-  text-shadow: 0 0 8px rgba(255,150,0,0.6);
-}
-
-.playBtn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── Cabinet feet ─────────────────────────────────────── */
