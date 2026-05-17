@@ -21,6 +21,8 @@ export function Radio({
   isLoadingEpisodes,
   dialMode,
   canSkipPrev,
+  sleepLabel,
+  sleepActive,
   onVolumeChange,
   onTuneKnobDelta,
   onSkipNext,
@@ -28,6 +30,8 @@ export function Radio({
   onToggleFavorite,
   onTogglePlay,
   onToggleDialMode,
+  onSleep,
+  onOpenSettings,
 }) {
   const { playClick, playBuzzer } = useClickSound();
 
@@ -68,6 +72,16 @@ export function Radio({
     onToggleFavorite();
   }
 
+  function handleSleep() {
+    playClick();
+    onSleep();
+  }
+
+  function handleOpenSettings() {
+    playClick();
+    onOpenSettings();
+  }
+
   return (
     <div className={styles.cabinet}>
       {/* Brand header */}
@@ -75,6 +89,9 @@ export function Radio({
         <div className={styles.brandName}>OldTimeRad.io</div>
         <div className={styles.brandModel}>Model OTR-1937</div>
       </div>
+
+      {/* Nixie tube display — above the dial */}
+      <NixieDisplay line1={nixieLine1} line2={nixieLine2} rightLabel={sleepLabel ?? ''} />
 
       {/* Gold divider */}
       <div className={styles.divider} />
@@ -88,8 +105,25 @@ export function Radio({
         dialMode={dialMode}
       />
 
-      {/* Nixie tube display */}
-      <NixieDisplay line1={nixieLine1} line2={nixieLine2} />
+      {/* Dial mode toggle — GNR / SHW — sits just below the dial */}
+      <div className={styles.modeToggleRow}>
+        <div className={styles.modeToggle}>
+          <button
+            className={`${styles.modeBtn} ${dialMode === 'genre' ? styles.modeBtnActive : ''}`}
+            onClick={() => { playClick(); if (dialMode !== 'genre') onToggleDialMode(); }}
+            aria-label="Genre station mode"
+          >
+            GNR
+          </button>
+          <button
+            className={`${styles.modeBtn} ${dialMode === 'fixed' ? styles.modeBtnActive : ''}`}
+            onClick={() => { playClick(); if (dialMode !== 'fixed') onToggleDialMode(); }}
+            aria-label="Fixed show mode"
+          >
+            SHW
+          </button>
+        </div>
+      </div>
 
       {/* Gold divider */}
       <div className={styles.divider} />
@@ -124,53 +158,56 @@ export function Radio({
         </div>
       </div>
 
-      {/* Transport row */}
+      {/* Transport row — SLP (under VOL) | PRV PSE NXT | SET (under FAV) */}
       <div className={styles.transportRow}>
+        {/* SLP — left column, aligns under VOL */}
         <div className={styles.transportWrap}>
           <button
-            className={`${styles.transportBtn} ${!canSkipPrev ? styles.transportBtnDisabled : ''}`}
-            onClick={handleSkipPrev}
-            aria-label="Previous track"
+            className={`${styles.transportBtn} ${sleepActive ? styles.transportBtnSleep : ''}`}
+            onClick={handleSleep}
+            aria-label={sleepActive ? `Sleep: ${sleepLabel}` : 'Start sleep timer'}
           />
-          <span className={styles.transportLabel}>PRV</span>
+          <span className={styles.transportLabel}>SLP</span>
         </div>
-        <div className={styles.transportWrap}>
-          <button
-            className={`${styles.transportBtn} ${isPlaying ? styles.transportBtnActive : ''}`}
-            onClick={handleTogglePlay}
-            disabled={!canPlay}
-            aria-label={isPlaying ? 'Pause' : 'Play'}
-          />
-          <span className={styles.transportLabel}>PSE</span>
+
+        {/* PRV PSE NXT — centre column */}
+        <div className={styles.transportCenter}>
+          <div className={styles.transportWrap}>
+            <button
+              className={`${styles.transportBtn} ${!canSkipPrev ? styles.transportBtnDisabled : ''}`}
+              onClick={handleSkipPrev}
+              aria-label="Previous track"
+            />
+            <span className={styles.transportLabel}>PRV</span>
+          </div>
+          <div className={styles.transportWrap}>
+            <button
+              className={`${styles.transportBtn} ${isPlaying ? styles.transportBtnActive : ''}`}
+              onClick={handleTogglePlay}
+              disabled={!canPlay}
+              aria-label={isPlaying ? 'Pause' : 'Play'}
+            />
+            <span className={styles.transportLabel}>PSE</span>
+          </div>
+          <div className={styles.transportWrap}>
+            <button
+              className={styles.transportBtn}
+              onClick={handleSkipNext}
+              disabled={!canPlay}
+              aria-label="Next track"
+            />
+            <span className={styles.transportLabel}>NXT</span>
+          </div>
         </div>
+
+        {/* SET — right column, aligns under FAV */}
         <div className={styles.transportWrap}>
           <button
             className={styles.transportBtn}
-            onClick={handleSkipNext}
-            disabled={!canPlay}
-            aria-label="Next track"
+            onClick={handleOpenSettings}
+            aria-label="Open settings"
           />
-          <span className={styles.transportLabel}>NXT</span>
-        </div>
-      </div>
-
-      {/* Dial mode toggle — GNR / SHW */}
-      <div className={styles.modeToggleRow}>
-        <div className={styles.modeToggle}>
-          <button
-            className={`${styles.modeBtn} ${dialMode === 'genre' ? styles.modeBtnActive : ''}`}
-            onClick={() => { playClick(); if (dialMode !== 'genre') onToggleDialMode(); }}
-            aria-label="Genre station mode"
-          >
-            GNR
-          </button>
-          <button
-            className={`${styles.modeBtn} ${dialMode === 'fixed' ? styles.modeBtnActive : ''}`}
-            onClick={() => { playClick(); if (dialMode !== 'fixed') onToggleDialMode(); }}
-            aria-label="Fixed show mode"
-          >
-            SHW
-          </button>
+          <span className={styles.transportLabel}>SET</span>
         </div>
       </div>
 

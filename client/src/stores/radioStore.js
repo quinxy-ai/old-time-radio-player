@@ -28,6 +28,9 @@ function getVisibleStations(allStations, dialMode) {
   });
 }
 
+// Approaching threshold — start pre-fetching at this signal strength
+const APPROACHING_THRESHOLD = 0.20;
+
 function calcSignal(frequency, stations) {
   let bestStrength = 0;
   let bestStation = null;
@@ -45,7 +48,11 @@ function calcSignal(frequency, stations) {
     }
   }
 
-  return { strength: bestStrength, station: bestStrength > 0.5 ? bestStation : null };
+  return {
+    strength:          bestStrength,
+    station:           bestStrength > 0.5              ? bestStation : null,
+    approachingStation: bestStrength > APPROACHING_THRESHOLD ? bestStation : null,
+  };
 }
 
 function loadPersistedState() {
@@ -65,12 +72,13 @@ const persisted = loadPersistedState();
 
 export const useRadioStore = create((set, get) => ({
   // --- Dial & tuning ---
-  dialPosition:   persisted.dialPosition,
-  frequency:      Math.round(positionToFreq(persisted.dialPosition)),
-  stations:       [],
-  currentStation: null,
-  signalStrength: 0,
-  dialMode:       persisted.dialMode,
+  dialPosition:       persisted.dialPosition,
+  frequency:          Math.round(positionToFreq(persisted.dialPosition)),
+  stations:           [],
+  currentStation:     null,
+  approachingStation: null,
+  signalStrength:     0,
+  dialMode:           persisted.dialMode,
 
   // --- Playback ---
   episodeQueue:      [],
@@ -78,6 +86,7 @@ export const useRadioStore = create((set, get) => ({
   currentEpisode:    null,
   isPlaying:         false,
   isLoadingEpisodes: false,
+  isBuffering:       false,
 
   // --- User controls ---
   volume:          0.7,
@@ -90,8 +99,8 @@ export const useRadioStore = create((set, get) => ({
     const { dialPosition, dialMode } = get();
     const frequency = Math.round(positionToFreq(dialPosition));
     const visible = getVisibleStations(stations, dialMode);
-    const { strength, station } = calcSignal(frequency, visible);
-    set({ stations, frequency, signalStrength: strength, currentStation: station });
+    const { strength, station, approachingStation } = calcSignal(frequency, visible);
+    set({ stations, frequency, signalStrength: strength, currentStation: station, approachingStation });
   },
 
   setDialPosition(pos) {
@@ -99,9 +108,9 @@ export const useRadioStore = create((set, get) => ({
     const frequency = Math.round(positionToFreq(clamped));
     const { stations, dialMode } = get();
     const visible = getVisibleStations(stations, dialMode);
-    const { strength, station } = calcSignal(frequency, visible);
+    const { strength, station, approachingStation } = calcSignal(frequency, visible);
     localStorage.setItem(STORAGE_KEY_DIAL, String(clamped));
-    set({ dialPosition: clamped, frequency, signalStrength: strength, currentStation: station });
+    set({ dialPosition: clamped, frequency, signalStrength: strength, currentStation: station, approachingStation });
   },
 
   nudgeDialPosition(delta) {
@@ -113,9 +122,9 @@ export const useRadioStore = create((set, get) => ({
     const newMode = dialMode === 'genre' ? 'fixed' : 'genre';
     const frequency = Math.round(positionToFreq(dialPosition));
     const visible = getVisibleStations(stations, newMode);
-    const { strength, station } = calcSignal(frequency, visible);
+    const { strength, station, approachingStation } = calcSignal(frequency, visible);
     localStorage.setItem(STORAGE_KEY_MODE, newMode);
-    set({ dialMode: newMode, signalStrength: strength, currentStation: station });
+    set({ dialMode: newMode, signalStrength: strength, currentStation: station, approachingStation });
   },
 
   setEpisodeQueue(queue, startIndex = 0) {
@@ -125,6 +134,7 @@ export const useRadioStore = create((set, get) => ({
 
   setIsLoadingEpisodes(loading) { set({ isLoadingEpisodes: loading }); },
   setIsPlaying(playing)         { set({ isPlaying: playing }); },
+  setIsBuffering(buffering)     { set({ isBuffering: buffering }); },
   setVolume(vol)                { set({ volume: Math.max(0, Math.min(1, vol)) }); },
 
   saveStationProgress(stationId, queue, index) {

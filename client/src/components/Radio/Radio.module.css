@@ -95,8 +95,9 @@
 
 /* ── Knob row: Volume | Tune | Fav lamp ──────────────── */
 .knobRow {
-  display: flex;
-  justify-content: space-evenly;
+  display: grid;
+  grid-template-columns: 49px 1fr 49px;
+  justify-items: center;
   align-items: center;
   padding: 10px 14px 4px;
 }
@@ -176,13 +177,20 @@
   opacity: 0.75;
 }
 
-/* ── Transport row: PRV PSE NXT ──────────────────────── */
+/* ── Transport row: SLP | PRV PSE NXT | SET ──────────── */
 .transportRow {
-  display: flex;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: 49px 1fr 49px;
+  justify-items: center;
   align-items: flex-start;
+  padding: 14px 14px 8px;
+}
+
+/* Inner flex group for the three centre buttons */
+.transportCenter {
+  display: flex;
   gap: 20px;
-  padding: 14px 14px 8px;   /* extra top padding so labels don't crowd the knob row */
+  align-items: flex-start;
 }
 
 .transportWrap {
@@ -285,6 +293,16 @@
     0 2px 6px rgba(0, 0, 0, 0.7),
     0 0 8px rgba(255, 140, 0, 0.3),
     inset 0 1px 1px rgba(180, 100, 40, 0.2),
+    inset 0 -1px 3px rgba(0, 0, 0, 0.6);
+}
+
+/* SLP button glows amber when sleep timer is active */
+.transportBtnSleep {
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.7),
+    0 0 10px rgba(255, 170, 0, 0.55),
+    0 0 20px rgba(255, 100, 0, 0.25),
+    inset 0 1px 1px rgba(255, 200, 80, 0.2),
     inset 0 -1px 3px rgba(0, 0, 0, 0.6);
 }
 

@@ -1,0 +1,124 @@
+/* ── Backdrop ──────────────────────────────────────── */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* ── Panel ─────────────────────────────────────────── */
+.panel {
+  width: min(340px, 94vw);
+  background:
+    repeating-linear-gradient(
+      89deg,
+      transparent 0px, transparent 3px,
+      rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px
+    ),
+    linear-gradient(180deg, #5C2E00 0%, #3d1c02 100%);
+  border-radius: 8px;
+  border: 1px solid #6B4510;
+  outline: 2px solid rgba(200, 160, 60, 0.25);
+  box-shadow:
+    0 0 0 4px #3d1c02,
+    0 20px 60px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+
+/* ── Title bar ─────────────────────────────────────── */
+.titleBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid rgba(200, 160, 60, 0.2);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.title {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 11px;
+  letter-spacing: 4px;
+  color: var(--gold-light);
+  text-shadow: 0 0 8px rgba(255, 200, 60, 0.4);
+}
+
+.closeBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--gold-mid);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(200, 160, 60, 0.3);
+  transition: background 0.15s;
+}
+
+.closeBtn:hover {
+  background: rgba(200, 80, 0, 0.4);
+  color: #fff;
+}
+
+/* ── Body ──────────────────────────────────────────── */
+.body {
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Fieldset ──────────────────────────────────────── */
+.fieldset {
+  border: 1px solid rgba(200, 160, 60, 0.18);
+  border-radius: 4px;
+  padding: 10px 12px 10px;
+  margin: 0;
+}
+
+.legend {
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 8px;
+  letter-spacing: 2.5px;
+  color: var(--gold-mid);
+  opacity: 0.7;
+  padding: 0 4px;
+}
+
+/* ── Option button group ───────────────────────────── */
+.btnGroup {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.optBtn {
+  flex: 1;
+  padding: 6px 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--gold-mid);
+  opacity: 0.45;
+  cursor: pointer;
+  border: 1px solid rgba(200, 160, 60, 0.2);
+  border-radius: 3px;
+  background: rgba(0, 0, 0, 0.35);
+  transition: opacity 0.12s, background 0.12s;
+}
+
+.optBtn:hover {
+  opacity: 0.7;
+}
+
+.optBtnActive {
+  opacity: 1;
+  background: radial-gradient(ellipse at 50% 30%, #5a2e10 0%, #2a1008 100%);
+  border-color: rgba(200, 160, 60, 0.45);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.5), 0 0 6px rgba(255,160,0,0.12);
+}

@@ -65,3 +65,12 @@
     0 0 3px #cc6600,
     0 0 6px rgba(200, 80, 0, 0.3);
 }
+
+/* Sleep countdown — slightly brighter amber, same size as charDim */
+.charSleep {
+  color: #ffaa00;
+  font-size: 11px;
+  text-shadow:
+    0 0 4px #ffaa00,
+    0 0 10px rgba(255, 140, 0, 0.5);
+}
