@@ -116,17 +116,34 @@ async function buildGenreQueue(station) {
   const allEpisodes = [];
   for (const show of sampled) {
     try {
-      const identifiers = await searchShow(show.searchQuery, 3);
-      let found = [];
-      for (const id of identifiers) {
-        const episodes = await getEpisodes(id);
-        found = filterByShow(episodes, show.name, id);
-        if (found.length >= 5) break;
+      const keywords = show.name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length > 2 && !STOPWORDS.has(w));
+
+      const identifiers = await searchShow(show.searchQuery, 5);
+
+      // Only use identifiers whose archive ID names this show — avoids title false-positives
+      const candidates = keywords.length > 0
+        ? identifiers.filter((id) => keywords.some((kw) => id.toLowerCase().replace(/[-_]/g, ' ').includes(kw)))
+        : identifiers.slice(0, 1);
+
+      if (candidates.length === 0) {
+        console.warn(`[OTR] Genre: no matching identifier for ${show.name} — skipping`);
+        continue;
       }
+
+      let found = [];
+      for (const id of candidates) {
+        const episodes = await getEpisodes(id);
+        if (episodes.length >= 5) { found = episodes; break; }
+      }
+
       if (found.length > 0) {
         allEpisodes.push(...found.map((ep) => ({ ...ep, showName: show.name })));
       } else {
-        console.warn(`[OTR] Genre: no matching episodes for ${show.name} — skipping`);
+        console.warn(`[OTR] Genre: no episodes for ${show.name} — skipping`);
       }
     } catch (err) {
       console.error(`Failed to load ${show.name}:`, err.message);
@@ -146,14 +163,30 @@ async function buildMiscQueue(allStations) {
     if (shows.length === 0) continue;
     const randomShow = shows[Math.floor(Math.random() * shows.length)];
     try {
-      const identifiers = await searchShow(randomShow.searchQuery, 3);
-      let filtered = [];
-      for (const id of identifiers) {
-        const episodes = await getEpisodes(id);
-        filtered = filterByShow(episodes, randomShow.name, id);
-        if (filtered.length >= 5) break;
+      const keywords = randomShow.name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .split(/\s+/)
+        .filter((w) => w.length > 2 && !STOPWORDS.has(w));
+
+      const identifiers = await searchShow(randomShow.searchQuery, 5);
+
+      const candidates = keywords.length > 0
+        ? identifiers.filter((id) => keywords.some((kw) => id.toLowerCase().replace(/[-_]/g, ' ').includes(kw)))
+        : identifiers.slice(0, 1);
+
+      if (candidates.length === 0) {
+        console.warn(`[OTR] Misc: no matching identifier for ${randomShow.name} — skipping`);
+        continue;
       }
-      const sampled = filtered
+
+      let found = [];
+      for (const id of candidates) {
+        const episodes = await getEpisodes(id);
+        if (episodes.length >= 5) { found = episodes; break; }
+      }
+
+      const sampled = found
         .sort(() => Math.random() - 0.5)
         .slice(0, 5)
         .map((ep) => ({ ...ep, showName: randomShow.name }));
