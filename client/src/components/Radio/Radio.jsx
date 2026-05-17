@@ -1,9 +1,12 @@
+import { useRef } from 'react';
 import { SpeakerGrill } from '../SpeakerGrill/SpeakerGrill.jsx';
 import { Dial } from '../Dial/Dial.jsx';
 import { Knob } from '../Knob/Knob.jsx';
 import { NixieDisplay } from '../NixieDisplay/NixieDisplay.jsx';
 import { useClickSound } from '../../hooks/useClickSound.js';
 import styles from './Radio.module.css';
+
+const LONG_PRESS_MS = 600;
 
 const VOL_SIZE = 49;
 const TUNE_SIZE = Math.min(174, Math.max(100, Math.round(window.innerHeight * 0.22)));
@@ -23,6 +26,7 @@ export function Radio({
   canSkipPrev,
   sleepLabel,
   sleepActive,
+  onSleepCancel,
   onVolumeChange,
   onTuneKnobDelta,
   onSkipNext,
@@ -34,6 +38,8 @@ export function Radio({
   onOpenSettings,
 }) {
   const { playClick, playBuzzer } = useClickSound();
+  const sleepPressTimer  = useRef(null);
+  const sleepDidLongPress = useRef(false);
 
   const nixieLine1 = currentStation
     ? currentStation.name.toUpperCase()
@@ -72,9 +78,21 @@ export function Radio({
     onToggleFavorite();
   }
 
-  function handleSleep() {
-    playClick();
-    onSleep();
+  function handleSleepPointerDown() {
+    sleepDidLongPress.current = false;
+    sleepPressTimer.current = setTimeout(() => {
+      sleepDidLongPress.current = true;
+      if (sleepActive) { playClick(); onSleepCancel(); }
+    }, LONG_PRESS_MS);
+  }
+
+  function handleSleepPointerUp() {
+    clearTimeout(sleepPressTimer.current);
+    if (!sleepDidLongPress.current) { playClick(); onSleep(); }
+  }
+
+  function handleSleepPointerLeave() {
+    clearTimeout(sleepPressTimer.current);
   }
 
   function handleOpenSettings() {
@@ -164,8 +182,10 @@ export function Radio({
         <div className={styles.transportWrap}>
           <button
             className={`${styles.transportBtn} ${sleepActive ? styles.transportBtnSleep : ''}`}
-            onClick={handleSleep}
-            aria-label={sleepActive ? `Sleep: ${sleepLabel}` : 'Start sleep timer'}
+            onPointerDown={handleSleepPointerDown}
+            onPointerUp={handleSleepPointerUp}
+            onPointerLeave={handleSleepPointerLeave}
+            aria-label={sleepActive ? `Sleep: ${sleepLabel} — long press to cancel` : 'Start sleep timer'}
           />
           <span className={styles.transportLabel}>SLP</span>
         </div>

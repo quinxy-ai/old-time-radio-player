@@ -41,7 +41,7 @@ export default function App() {
   } = useRadioStore();
 
   const { settings, updateSettings } = useSettings();
-  const { sleepLabel, addSleep } = useSleepTimer(settings.sleepMinutes);
+  const { sleepLabel, addSleep, cancelSleep } = useSleepTimer(settings.sleepMinutes);
   useAudio({ bufferingStatic: settings.bufferingStatic });
 
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -179,6 +179,7 @@ export default function App() {
         onTogglePlay={() => setIsPlaying(!isPlaying)}
         onToggleDialMode={toggleDialMode}
         onSleep={addSleep}
+        onSleepCancel={cancelSleep}
         onOpenSettings={() => setSettingsOpen(true)}
       />
 

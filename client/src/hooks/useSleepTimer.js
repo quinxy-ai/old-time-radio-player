@@ -38,6 +38,12 @@ export function useSleepTimer(incrementMinutes = 30) {
     startTicking();
   }, [incrementMinutes, setIsPlaying, startTicking]);
 
+  const cancelSleep = useCallback(() => {
+    stopTicking();
+    setSecondsLeft(0);
+    // Playback continues uninterrupted — no setIsPlaying call
+  }, [stopTicking]);
+
   // Cleanup on unmount
   useEffect(() => () => stopTicking(), [stopTicking]);
 
@@ -45,5 +51,5 @@ export function useSleepTimer(incrementMinutes = 30) {
     ? `${String(Math.floor(secondsLeft / 60)).padStart(2, '0')}:${String(secondsLeft % 60).padStart(2, '0')}`
     : null;
 
-  return { secondsLeft, sleepLabel, addSleep };
+  return { secondsLeft, sleepLabel, addSleep, cancelSleep };
 }
