@@ -58,7 +58,23 @@ function textAnchor(angleDeg) {
   return 'middle';
 }
 
-export function Dial({ dialPosition, onPositionChange, stations = [], signalStrength = 0 }) {
+const DOT_COLORS = {
+  genre:     { fill: '#cc2200', opacity: 0.75 },
+  fixed:     { fill: '#1a5fc8', opacity: 0.80 },
+  misc:      { fill: '#cc8800', opacity: 0.75 },
+  favorites: { fill: '#cc8800', opacity: 0.75 },
+};
+
+function getVisibleDots(stations, dialMode) {
+  return stations.filter((s) => {
+    if (s.type === 'favorites' || s.type === 'misc') return true;
+    if (dialMode === 'genre') return s.type === 'genre';
+    if (dialMode === 'fixed') return s.type === 'fixed';
+    return false;
+  });
+}
+
+export function Dial({ dialPosition, onPositionChange, stations = [], signalStrength = 0, dialMode = 'genre' }) {
   const needleAngle = freqToAngle(FREQ_MIN + dialPosition * (FREQ_MAX - FREQ_MIN));
   const frequency = Math.round(FREQ_MIN + dialPosition * (FREQ_MAX - FREQ_MIN));
 
@@ -259,14 +275,15 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
           );
         })()}
 
-        {/* ── Station dots ── */}
-        {stations.map((s) => {
+        {/* ── Station dots (filtered by dial mode, color-coded by type) ── */}
+        {getVisibleDots(stations, dialMode).map((s) => {
           const a = freqToAngle(s.frequency);
           const p = polar(CX, CY, R_DOT, a);
+          const { fill, opacity } = DOT_COLORS[s.type] ?? DOT_COLORS.genre;
           return (
             <circle key={s.id}
               cx={p.x} cy={p.y} r="3.5"
-              fill="#cc2200" opacity="0.75"
+              fill={fill} opacity={opacity}
             />
           );
         })}

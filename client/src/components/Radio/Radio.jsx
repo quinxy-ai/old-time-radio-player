@@ -2,11 +2,10 @@ import { SpeakerGrill } from '../SpeakerGrill/SpeakerGrill.jsx';
 import { Dial } from '../Dial/Dial.jsx';
 import { Knob } from '../Knob/Knob.jsx';
 import { NixieDisplay } from '../NixieDisplay/NixieDisplay.jsx';
+import { useClickSound } from '../../hooks/useClickSound.js';
 import styles from './Radio.module.css';
 
 const VOL_SIZE = 49;
-// Scale TUNE knob to 22 % of viewport height, capped at 174 px.
-// This keeps the knob row from overflowing on short phone screens.
 const TUNE_SIZE = Math.min(174, Math.max(100, Math.round(window.innerHeight * 0.22)));
 
 export function Radio({
@@ -20,13 +19,18 @@ export function Radio({
   volume,
   isFavorite,
   isLoadingEpisodes,
+  dialMode,
+  canSkipPrev,
   onVolumeChange,
   onTuneKnobDelta,
   onSkipNext,
   onSkipPrev,
   onToggleFavorite,
   onTogglePlay,
+  onToggleDialMode,
 }) {
+  const { playClick, playBuzzer } = useClickSound();
+
   const nixieLine1 = currentStation
     ? currentStation.name.toUpperCase()
     : signalStrength > 0
@@ -40,6 +44,29 @@ export function Radio({
     : '';
 
   const canPlay = Boolean(currentEpisode);
+
+  function handleSkipPrev() {
+    if (!canSkipPrev) { playBuzzer(); return; }
+    playClick();
+    onSkipPrev();
+  }
+
+  function handleTogglePlay() {
+    if (!canPlay) { playBuzzer(); return; }
+    playClick();
+    onTogglePlay();
+  }
+
+  function handleSkipNext() {
+    if (!canPlay) { playBuzzer(); return; }
+    playClick();
+    onSkipNext();
+  }
+
+  function handleToggleFavorite() {
+    playClick();
+    onToggleFavorite();
+  }
 
   return (
     <div className={styles.cabinet}>
@@ -58,6 +85,7 @@ export function Radio({
         onPositionChange={onDialPositionChange}
         stations={stations}
         signalStrength={signalStrength}
+        dialMode={dialMode}
       />
 
       {/* Nixie tube display */}
@@ -66,9 +94,8 @@ export function Radio({
       {/* Gold divider */}
       <div className={styles.divider} />
 
-      {/* Knob row — each column is a plain block so Knob's internal flex:1 is contained */}
+      {/* Knob row */}
       <div className={styles.knobRow}>
-        {/* Volume */}
         <div className={styles.knobCol}>
           <Knob
             label="VOL"
@@ -78,7 +105,6 @@ export function Radio({
           />
         </div>
 
-        {/* Tune */}
         <div className={styles.knobCol}>
           <Knob
             label="TUNE"
@@ -88,24 +114,22 @@ export function Radio({
           />
         </div>
 
-        {/* Favourite jewel-lamp */}
         <div className={styles.knobCol}>
           <button
             className={`${styles.favBtn} ${isFavorite ? styles.favBtnOn : ''}`}
-            onClick={onToggleFavorite}
+            onClick={handleToggleFavorite}
             aria-label={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
           />
           <span className={styles.knobLabel}>FAV</span>
         </div>
       </div>
 
-      {/* Transport row — PRV PSE NXT */}
+      {/* Transport row */}
       <div className={styles.transportRow}>
         <div className={styles.transportWrap}>
           <button
-            className={styles.transportBtn}
-            onClick={onSkipPrev}
-            disabled={!canPlay}
+            className={`${styles.transportBtn} ${!canSkipPrev ? styles.transportBtnDisabled : ''}`}
+            onClick={handleSkipPrev}
             aria-label="Previous track"
           />
           <span className={styles.transportLabel}>PRV</span>
@@ -113,7 +137,7 @@ export function Radio({
         <div className={styles.transportWrap}>
           <button
             className={`${styles.transportBtn} ${isPlaying ? styles.transportBtnActive : ''}`}
-            onClick={onTogglePlay}
+            onClick={handleTogglePlay}
             disabled={!canPlay}
             aria-label={isPlaying ? 'Pause' : 'Play'}
           />
@@ -122,11 +146,31 @@ export function Radio({
         <div className={styles.transportWrap}>
           <button
             className={styles.transportBtn}
-            onClick={onSkipNext}
+            onClick={handleSkipNext}
             disabled={!canPlay}
             aria-label="Next track"
           />
           <span className={styles.transportLabel}>NXT</span>
+        </div>
+      </div>
+
+      {/* Dial mode toggle — GNR / SHW */}
+      <div className={styles.modeToggleRow}>
+        <div className={styles.modeToggle}>
+          <button
+            className={`${styles.modeBtn} ${dialMode === 'genre' ? styles.modeBtnActive : ''}`}
+            onClick={() => { playClick(); if (dialMode !== 'genre') onToggleDialMode(); }}
+            aria-label="Genre station mode"
+          >
+            GNR
+          </button>
+          <button
+            className={`${styles.modeBtn} ${dialMode === 'fixed' ? styles.modeBtnActive : ''}`}
+            onClick={() => { playClick(); if (dialMode !== 'fixed') onToggleDialMode(); }}
+            aria-label="Fixed show mode"
+          >
+            SHW
+          </button>
         </div>
       </div>
 

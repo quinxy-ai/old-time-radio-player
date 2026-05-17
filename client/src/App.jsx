@@ -4,7 +4,7 @@ import { useAudio } from './hooks/useAudio.js';
 import { fetchStations, fetchStationEpisodes } from './services/api.js';
 import { Radio } from './components/Radio/Radio.jsx';
 
-const TUNING_SENSITIVITY = 0.15; // fraction of full dial range per full knob revolution
+const TUNING_SENSITIVITY = 0.15;
 
 export default function App() {
   const {
@@ -17,6 +17,7 @@ export default function App() {
     volume,
     favorites,
     isLoadingEpisodes,
+    dialMode,
     setStations,
     setDialPosition,
     nudgeDialPosition,
@@ -28,24 +29,35 @@ export default function App() {
     skipPrev,
     toggleFavorite,
     isCurrentFavorite,
+    toggleDialMode,
+    saveStationProgress,
+    getSavedProgress,
   } = useRadioStore();
 
-  useAudio(); // manages the Audio element reactively
+  useAudio();
 
   const loadedStationRef = useRef(null);
+  const prevStationRef   = useRef(null);
 
-  // Load station list on mount
   useEffect(() => {
     fetchStations()
       .then(setStations)
       .catch((err) => console.error('Failed to load stations:', err));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When the active station changes, load its episode queue
   useEffect(() => {
+    // Save progress for genre/fixed station we're leaving
+    if (
+      prevStationRef.current &&
+      prevStationRef.current.id !== currentStation?.id &&
+      (prevStationRef.current.type === 'genre' || prevStationRef.current.type === 'fixed')
+    ) {
+      const { episodeQueue, episodeIndex } = useRadioStore.getState();
+      saveStationProgress(prevStationRef.current.id, episodeQueue, episodeIndex);
+    }
+    prevStationRef.current = currentStation;
+
     if (!currentStation) {
-      // Tuned away — let the crossfade fade the audio naturally; don't cut the episode.
-      // Reset the tracker so we reload if the user returns to the same station.
       loadedStationRef.current = null;
       return;
     }
@@ -53,13 +65,22 @@ export default function App() {
     if (loadedStationRef.current === currentStation.id) return;
     loadedStationRef.current = currentStation.id;
 
-    // Switching to a different station — stop the old audio immediately.
     setEpisodeQueue([]);
 
     if (currentStation.type === 'favorites') {
       const shuffled = [...favorites].sort(() => Math.random() - 0.5);
       setEpisodeQueue(shuffled);
       return;
+    }
+
+    // Restore saved position for genre and fixed stations
+    if (currentStation.type === 'genre' || currentStation.type === 'fixed') {
+      const saved = getSavedProgress(currentStation.id);
+      if (saved) {
+        setEpisodeQueue(saved.queue, saved.index);
+        setIsPlaying(true);
+        return;
+      }
     }
 
     setIsLoadingEpisodes(true);
@@ -78,6 +99,8 @@ export default function App() {
     nudgeDialPosition(normalizedDelta * TUNING_SENSITIVITY);
   }
 
+  const canSkipPrev = Boolean(currentEpisode) && currentStation?.type !== 'genre';
+
   return (
     <Radio
       dialPosition={dialPosition}
@@ -90,12 +113,15 @@ export default function App() {
       volume={volume}
       isFavorite={isCurrentFavorite()}
       isLoadingEpisodes={isLoadingEpisodes}
+      dialMode={dialMode}
+      canSkipPrev={canSkipPrev}
       onVolumeChange={setVolume}
       onTuneKnobDelta={handleTuneKnobDelta}
       onSkipNext={skipNext}
       onSkipPrev={skipPrev}
       onToggleFavorite={toggleFavorite}
       onTogglePlay={() => setIsPlaying(!isPlaying)}
+      onToggleDialMode={toggleDialMode}
     />
   );
 }

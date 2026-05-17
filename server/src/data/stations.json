@@ -17,7 +17,15 @@
         { "name": "Yours Truly Johnny Dollar", "searchQuery": "Johnny Dollar radio" },
         { "name": "Boston Blackie", "searchQuery": "Boston Blackie radio" },
         { "name": "Nero Wolfe", "searchQuery": "Nero Wolfe radio mysteries" },
-        { "name": "Philip Marlowe", "searchQuery": "Philip Marlowe radio detective" }
+        { "name": "Philip Marlowe", "searchQuery": "Philip Marlowe radio detective" },
+        { "name": "Dragnet", "searchQuery": "Dragnet NBC radio Jack Webb" },
+        { "name": "Richard Diamond", "searchQuery": "Richard Diamond Private Detective radio" },
+        { "name": "Mr. District Attorney", "searchQuery": "Mr District Attorney radio" },
+        { "name": "Nick Carter", "searchQuery": "Nick Carter Master Detective radio" },
+        { "name": "Ellery Queen", "searchQuery": "Ellery Queen radio detective" },
+        { "name": "The Fat Man", "searchQuery": "The Fat Man radio detective" },
+        { "name": "Mr. and Mrs. North", "searchQuery": "Mr and Mrs North radio" },
+        { "name": "Broadway Is My Beat", "searchQuery": "Broadway Is My Beat radio noir" }
       ]
     },
     {
@@ -30,7 +38,15 @@
         { "name": "Burns and Allen", "searchQuery": "George Burns Gracie Allen radio" },
         { "name": "Fibber McGee and Molly", "searchQuery": "Fibber McGee Molly radio" },
         { "name": "The Great Gildersleeve", "searchQuery": "Great Gildersleeve radio" },
-        { "name": "Abbott and Costello", "searchQuery": "Abbott Costello radio program" }
+        { "name": "Abbott and Costello", "searchQuery": "Abbott Costello radio program" },
+        { "name": "Amos 'n' Andy", "searchQuery": "Amos Andy radio show" },
+        { "name": "Bob Hope Show", "searchQuery": "Bob Hope NBC radio show" },
+        { "name": "Red Skelton Show", "searchQuery": "Red Skelton radio show" },
+        { "name": "Our Miss Brooks", "searchQuery": "Our Miss Brooks CBS radio" },
+        { "name": "The Phil Harris Alice Faye Show", "searchQuery": "Phil Harris Alice Faye radio" },
+        { "name": "The Life of Riley", "searchQuery": "Life of Riley radio NBC" },
+        { "name": "Fred Allen Show", "searchQuery": "Fred Allen radio show" },
+        { "name": "Ozzie and Harriet", "searchQuery": "Ozzie Harriet radio adventures" }
       ]
     },
     {
@@ -42,7 +58,14 @@
         { "name": "Gunsmoke", "searchQuery": "Gunsmoke CBS radio western" },
         { "name": "The Lone Ranger", "searchQuery": "Lone Ranger radio show" },
         { "name": "Have Gun Will Travel", "searchQuery": "Have Gun Will Travel radio" },
-        { "name": "Red Ryder", "searchQuery": "Red Ryder radio adventures" }
+        { "name": "Red Ryder", "searchQuery": "Red Ryder radio adventures" },
+        { "name": "Hopalong Cassidy", "searchQuery": "Hopalong Cassidy radio" },
+        { "name": "Wild Bill Hickok", "searchQuery": "Wild Bill Hickok radio" },
+        { "name": "The Cisco Kid", "searchQuery": "Cisco Kid radio" },
+        { "name": "Gene Autry's Melody Ranch", "searchQuery": "Gene Autry Melody Ranch radio" },
+        { "name": "Roy Rogers Show", "searchQuery": "Roy Rogers radio show" },
+        { "name": "Death Valley Days", "searchQuery": "Death Valley Days radio" },
+        { "name": "Fort Laramie", "searchQuery": "Fort Laramie CBS radio western" }
       ]
     },
     {
@@ -54,7 +77,12 @@
         { "name": "Suspense", "searchQuery": "Suspense CBS radio thriller" },
         { "name": "Inner Sanctum Mysteries", "searchQuery": "Inner Sanctum radio mysteries" },
         { "name": "Lights Out", "searchQuery": "Lights Out radio horror" },
-        { "name": "Escape", "searchQuery": "Escape CBS radio adventure" }
+        { "name": "Escape", "searchQuery": "Escape CBS radio adventure" },
+        { "name": "The Mysterious Traveler", "searchQuery": "Mysterious Traveler radio" },
+        { "name": "The Witch's Tale", "searchQuery": "Witches Tale radio horror" },
+        { "name": "Night Beat", "searchQuery": "Night Beat radio noir drama" },
+        { "name": "Dark Fantasy", "searchQuery": "Dark Fantasy NBC radio horror" },
+        { "name": "Quiet Please", "searchQuery": "Quiet Please radio horror" }
       ]
     },
     {
@@ -65,7 +93,12 @@
       "shows": [
         { "name": "X Minus One", "searchQuery": "X Minus One NBC radio science fiction" },
         { "name": "Dimension X", "searchQuery": "Dimension X NBC radio" },
-        { "name": "2000 Plus", "searchQuery": "2000 Plus radio science fiction" }
+        { "name": "2000 Plus", "searchQuery": "2000 Plus radio science fiction" },
+        { "name": "Exploring Tomorrow", "searchQuery": "Exploring Tomorrow radio science fiction" },
+        { "name": "Space Patrol", "searchQuery": "Space Patrol radio ABC" },
+        { "name": "Buck Rogers", "searchQuery": "Buck Rogers 25th Century radio" },
+        { "name": "Captain Midnight", "searchQuery": "Captain Midnight radio serial" },
+        { "name": "Flash Gordon", "searchQuery": "Flash Gordon radio serial" }
       ]
     },
     {
@@ -76,7 +109,13 @@
       "shows": [
         { "name": "Adventures of Superman", "searchQuery": "Adventures of Superman radio" },
         { "name": "The Green Hornet", "searchQuery": "Green Hornet radio show" },
-        { "name": "Challenge of the Yukon", "searchQuery": "Sergeant Preston Yukon radio" }
+        { "name": "Challenge of the Yukon", "searchQuery": "Sergeant Preston Yukon radio" },
+        { "name": "Tarzan", "searchQuery": "Tarzan radio show adventures" },
+        { "name": "Sky King", "searchQuery": "Sky King radio CBS" },
+        { "name": "Jack Armstrong", "searchQuery": "Jack Armstrong All American Boy radio" },
+        { "name": "Terry and the Pirates", "searchQuery": "Terry Pirates radio serial" },
+        { "name": "The Sea Hound", "searchQuery": "Sea Hound radio adventure" },
+        { "name": "Hop Harrigan", "searchQuery": "Hop Harrigan radio adventure" }
       ]
     },
     {
@@ -87,7 +126,12 @@
       "shows": [
         { "name": "Lux Radio Theatre", "searchQuery": "Lux Radio Theatre CBS" },
         { "name": "Mercury Theatre on the Air", "searchQuery": "Mercury Theatre Orson Welles radio" },
-        { "name": "Screen Guild Theatre", "searchQuery": "Screen Guild Theatre radio" }
+        { "name": "Screen Guild Theatre", "searchQuery": "Screen Guild Theatre radio" },
+        { "name": "Campbell Playhouse", "searchQuery": "Campbell Playhouse Orson Welles radio" },
+        { "name": "Ford Theatre", "searchQuery": "Ford Theatre radio drama" },
+        { "name": "Theatre Guild on the Air", "searchQuery": "Theatre Guild on the Air radio" },
+        { "name": "Academy Award Theatre", "searchQuery": "Academy Award Theatre radio CBS" },
+        { "name": "Stars Over Hollywood", "searchQuery": "Stars Over Hollywood radio drama" }
       ]
     },
     {
@@ -95,6 +139,55 @@
       "type": "misc",
       "name": "The Golden Age",
       "frequency": 1490
+    },
+    {
+      "id": "fixed-longeranger",
+      "type": "fixed",
+      "name": "The Lone Ranger",
+      "frequency": 620,
+      "show": { "name": "The Lone Ranger", "searchQuery": "Lone Ranger radio show" }
+    },
+    {
+      "id": "fixed-jackbenny",
+      "type": "fixed",
+      "name": "Jack Benny Program",
+      "frequency": 660,
+      "show": { "name": "Jack Benny Program", "searchQuery": "Jack Benny Program radio" }
+    },
+    {
+      "id": "fixed-suspense",
+      "type": "fixed",
+      "name": "Suspense",
+      "frequency": 700,
+      "show": { "name": "Suspense", "searchQuery": "Suspense CBS radio thriller" }
+    },
+    {
+      "id": "fixed-fibber",
+      "type": "fixed",
+      "name": "Fibber McGee and Molly",
+      "frequency": 740,
+      "show": { "name": "Fibber McGee and Molly", "searchQuery": "Fibber McGee Molly radio" }
+    },
+    {
+      "id": "fixed-shadow",
+      "type": "fixed",
+      "name": "The Shadow",
+      "frequency": 780,
+      "show": { "name": "The Shadow", "searchQuery": "The Shadow radio show" }
+    },
+    {
+      "id": "fixed-gunsmoke",
+      "type": "fixed",
+      "name": "Gunsmoke",
+      "frequency": 820,
+      "show": { "name": "Gunsmoke", "searchQuery": "Gunsmoke CBS radio western" }
+    },
+    {
+      "id": "fixed-johnnydollar",
+      "type": "fixed",
+      "name": "Yours Truly Johnny Dollar",
+      "frequency": 860,
+      "show": { "name": "Yours Truly Johnny Dollar", "searchQuery": "Johnny Dollar radio" }
     }
   ]
 }

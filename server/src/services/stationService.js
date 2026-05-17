@@ -14,8 +14,7 @@ export function getStations() {
     type: s.type,
     name: s.name,
     frequency: s.frequency,
-    // Include show names for display, omit raw search queries
-    shows: s.shows?.map((sh) => sh.name) ?? [],
+    shows: s.shows?.map((sh) => sh.name) ?? (s.show ? [s.show.name] : []),
   }));
 }
 
@@ -40,7 +39,27 @@ export async function getStationEpisodes(stationId) {
     return buildGenreQueue(station);
   }
 
+  if (station.type === 'fixed') {
+    return buildFixedQueue(station);
+  }
+
   return [];
+}
+
+async function buildFixedQueue(station) {
+  const show = station.show;
+  if (!show) return [];
+  try {
+    const identifiers = await searchShow(show.searchQuery, 3);
+    if (identifiers.length === 0) return [];
+    const episodes = await getEpisodes(identifiers[0]);
+    // Sort alphabetically by title for approximate episode order
+    const sorted = [...episodes].sort((a, b) => a.title.localeCompare(b.title));
+    return sorted.map((ep) => ({ ...ep, showName: show.name }));
+  } catch (err) {
+    console.error(`Fixed queue: failed to load ${show.name}:`, err.message);
+    return [];
+  }
 }
 
 async function buildGenreQueue(station) {
