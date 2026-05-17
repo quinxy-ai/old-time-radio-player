@@ -11,6 +11,49 @@ const ARC_MIN = -150;
 const ARC_MAX = 150;
 const TUNING_SENSITIVITY = 0.12; // fraction of full dial range per full knob revolution
 
+// Compute a gear outline path — n teeth, outer radius ro, inner (root) radius ri
+function gearPath(n, ro, ri) {
+  const step = (Math.PI * 2) / n;
+  const half = step * 0.28; // half-width of each tooth in radians
+  let d = '';
+  for (let i = 0; i < n; i++) {
+    const a  = i * step - Math.PI / 2;
+    const na = (i + 1) * step - Math.PI / 2;
+    const pt = (r, angle) =>
+      `${(r * Math.cos(angle)).toFixed(2)},${(r * Math.sin(angle)).toFixed(2)}`;
+    d += `${i === 0 ? 'M' : 'L'} ${pt(ro, a - half)} `;
+    d += `L ${pt(ro, a + half)} `;
+    d += `L ${pt(ri, a + half)} `;
+    d += `L ${pt(ri, na - half)} `;
+  }
+  return d + 'Z';
+}
+
+// Simplified heraldic lion rampant silhouette.
+// facing="right" = faces right; scale(-1,1) used for "left".
+function HeraldLion({ facing = 'right', fill = '#4a3000' }) {
+  const f = facing === 'left' ? -1 : 1;
+  return (
+    <g transform={`scale(${f},1)`} fill={fill}>
+      {/* Mane */}
+      <circle cx="6" cy="-11" r="7" />
+      {/* Body */}
+      <path d="M 5,-4 C 9,-5 11,-2 11,2 C 11,7 9,10 5,11 C 1,12 -4,10 -5,6 C -6,2 -4,-3 -1,-4 Z" />
+      {/* Haunches */}
+      <circle cx="-3" cy="9" r="6" />
+      {/* Tail (curls up and back) */}
+      <path d="M -8,5 C -15,2 -17,-6 -13,-11 C -12,-13 -10,-13 -10,-11 C -11,-10 -12,-7 -10,-4 C -9,-1 -7,3 -6,5 Z" />
+      {/* Raised front leg */}
+      <path d="M 10,-1 C 13,-3 15,-1 15,2 C 15,6 13,9 11,11 L 9,10 C 10,8 12,5 11,2 C 11,-1 10,-1 10,-1 Z" />
+      {/* Standing front leg */}
+      <path d="M 4,10 L 4,20 L 7,20 L 7,10 Z" />
+      {/* Back legs */}
+      <path d="M -7,13 L -7,22 L -4,22 L -4,13 Z" />
+      <path d="M -2,13 L -2,22 L 1,22 L 1,13 Z" />
+    </g>
+  );
+}
+
 // SVG coordinate system: 0° at top, clockwise positive
 function polar(cx, cy, r, angleDeg) {
   const rad = angleDeg * (Math.PI / 180);
@@ -148,6 +191,19 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
             <feDropShadow dx="1" dy="1" stdDeviation="1.5" floodOpacity="0.4" />
           </filter>
 
+          {/* Logo filter: white → transparent, blacks → dial ink brown.
+               Step 1: feColorMatrix sets color to brown and alpha = 1-R (darkness).
+               Step 2: feComposite masks by original alpha so transparent PNG padding stays transparent. */}
+          <filter id="logoInk" x="0%" y="0%" width="100%" height="100%" colorInterpolationFilters="sRGB">
+            <feColorMatrix in="SourceGraphic" result="inked" type="matrix" values="
+              0 0 0 0 0.29
+              0 0 0 0 0.19
+              0 0 0 0 0
+             -1 0 0 0 1
+            " />
+            <feComposite in="inked" in2="SourceGraphic" operator="in" />
+          </filter>
+
           {/* Clip to dial face circle */}
           <clipPath id="faceClip">
             <circle cx={CX} cy={CY} r={R_FACE} />
@@ -160,6 +216,32 @@ export function Dial({ dialPosition, onPositionChange, stations = [], signalStre
 
         {/* ── Dial face ── */}
         <circle cx={CX} cy={CY} r={R_FACE} fill="url(#dialFace)" />
+
+        {/* ── Brand: OldTimeRad.io text + BESIEX logo — inked on face ── */}
+        {(() => {
+          const INK = '#4a3000';
+          const OPA = 0.82;
+          return (
+            <g clipPath="url(#faceClip)">
+              {/* Station name / brand — italic serif above centre */}
+              <text x={CX} y={CY - 36}
+                textAnchor="middle" dominantBaseline="middle"
+                fontFamily="Georgia, 'Times New Roman', serif"
+                fontStyle="italic" fontSize="9.5" letterSpacing="0.4"
+                fill={INK} opacity={OPA}
+              >OldTimeRad.io</text>
+
+              {/* BESIEX logo — below needle pivot, in open lower-centre area */}
+              <image
+                href="/besiex-logo.png"
+                x={116} y={158}
+                width={68} height={57}
+                opacity={OPA}
+                filter="url(#logoInk)"
+              />
+            </g>
+          );
+        })()}
 
         {/* ── Dead-zone arc (bottom 60°, between stations) ── */}
         <path

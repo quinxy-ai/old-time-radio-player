@@ -102,17 +102,8 @@ export function Radio({
 
   return (
     <div className={styles.cabinet}>
-      {/* Brand header */}
-      <div className={styles.header}>
-        <div className={styles.brandName}>OldTimeRad.io</div>
-        <div className={styles.brandModel}>Model OTR-1937</div>
-      </div>
-
       {/* Nixie tube display — above the dial */}
       <NixieDisplay line1={nixieLine1} line2={nixieLine2} rightLabel={sleepLabel ?? ''} />
-
-      {/* Gold divider */}
-      <div className={styles.divider} />
 
       {/* Large round tuning dial */}
       <Dial
