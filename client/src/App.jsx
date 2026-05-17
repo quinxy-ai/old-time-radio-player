@@ -47,6 +47,7 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   const loadedStationRef  = useRef(null);
+  const loadEpochRef      = useRef(0);
   const prevStationRef    = useRef(null);
   const prefetchCacheRef  = useRef({});
   const prefetchingRef    = useRef(new Set());
@@ -64,12 +65,6 @@ export default function App() {
     if (station.type === 'favorites') return;
     if (prefetchCacheRef.current[station.id]) return;
     if (prefetchingRef.current.has(station.id)) return;
-
-    const saved = getSavedProgress(station.id);
-    if (saved) {
-      prefetchCacheRef.current[station.id] = saved.queue;
-      return;
-    }
 
     prefetchingRef.current.add(station.id);
     fetchStationEpisodes(station.id)
@@ -94,6 +89,7 @@ export default function App() {
 
     if (!currentStation) {
       loadedStationRef.current = null;
+      loadEpochRef.current++;   // invalidate any in-flight fetch
       setEpisodeQueue([]);
       return;
     }
@@ -105,14 +101,17 @@ export default function App() {
 
     if (currentStation.type === 'favorites') {
       const shuffled = [...favorites].sort(() => Math.random() - 0.5);
+      console.log(`[OTR] Station: ${currentStation.name} | source: favorites | episodes:`, shuffled.map(e => e.title));
       setEpisodeQueue(shuffled);
       return;
     }
 
     // Restore saved position for genre and fixed stations
     if (currentStation.type === 'genre' || currentStation.type === 'fixed') {
-      const saved = getSavedProgress(currentStation.id);
+      const expectedShow = currentStation.type === 'fixed' ? currentStation.name : null;
+      const saved = getSavedProgress(currentStation.id, expectedShow);
       if (saved) {
+        console.log(`[OTR] Station: ${currentStation.name} | source: saved-progress (index ${saved.index}) | episodes:`, saved.queue.map(e => e.title));
         setEpisodeQueue(saved.queue, saved.index);
         setIsPlaying(true);
         return;
@@ -122,22 +121,32 @@ export default function App() {
     // Use pre-fetched cache if available — skips API round-trip
     const cached = prefetchCacheRef.current[currentStation.id];
     if (cached?.length > 0) {
+      console.log(`[OTR] Station: ${currentStation.name} | source: prefetch-cache | episodes:`, cached.map(e => e.title));
       setEpisodeQueue(cached);
       setIsPlaying(true);
       return;
     }
 
     setIsLoadingEpisodes(true);
-    fetchStationEpisodes(currentStation.id)
+    const stationIdAtLoad = currentStation.id;
+    const epoch = ++loadEpochRef.current;
+    fetchStationEpisodes(stationIdAtLoad)
       .then((episodes) => {
+        if (loadEpochRef.current !== epoch) return; // tuned away before fetch completed
         if (episodes.length > 0) {
-          prefetchCacheRef.current[currentStation.id] = episodes;
+          console.log(`[OTR] Station: ${currentStation.name} | source: api-fetch | episodes:`, episodes.map(e => e.title));
+          prefetchCacheRef.current[stationIdAtLoad] = episodes;
           setEpisodeQueue(episodes);
           setIsPlaying(true);
         }
       })
-      .catch((err) => console.error('Failed to load episodes:', err))
-      .finally(() => setIsLoadingEpisodes(false));
+      .catch((err) => {
+        if (loadEpochRef.current !== epoch) return;
+        console.error('Failed to load episodes:', err);
+      })
+      .finally(() => {
+        if (loadEpochRef.current === epoch) setIsLoadingEpisodes(false);
+      });
   }, [currentStation?.id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const sensitivityMult = SENSITIVITY_MULTIPLIER[settings.dialSensitivity] ?? 1;

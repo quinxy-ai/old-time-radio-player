@@ -145,49 +145,49 @@
       "type": "fixed",
       "name": "The Lone Ranger",
       "frequency": 620,
-      "show": { "name": "The Lone Ranger", "searchQuery": "Lone Ranger radio show" }
+      "show": { "name": "The Lone Ranger", "archiveId": "OTRR_LoneRanger_Singles", "searchQuery": "Lone Ranger radio show" }
     },
     {
       "id": "fixed-jackbenny",
       "type": "fixed",
       "name": "Jack Benny Program",
       "frequency": 660,
-      "show": { "name": "Jack Benny Program", "searchQuery": "Jack Benny Program radio" }
+      "show": { "name": "Jack Benny Program", "archiveId": "TheJackBennyProgram", "searchQuery": "Jack Benny Program radio" }
     },
     {
       "id": "fixed-suspense",
       "type": "fixed",
       "name": "Suspense",
       "frequency": 700,
-      "show": { "name": "Suspense", "searchQuery": "Suspense CBS radio thriller" }
+      "show": { "name": "Suspense", "archiveId": "OTRR_Suspense_Singles", "searchQuery": "Suspense CBS radio thriller" }
     },
     {
       "id": "fixed-fibber",
       "type": "fixed",
       "name": "Fibber McGee and Molly",
       "frequency": 740,
-      "show": { "name": "Fibber McGee and Molly", "searchQuery": "Fibber McGee Molly radio" }
+      "show": { "name": "Fibber McGee and Molly", "archiveId": "fibber-mc-gee-and-molly", "searchQuery": "Fibber McGee Molly radio" }
     },
     {
       "id": "fixed-shadow",
       "type": "fixed",
       "name": "The Shadow",
       "frequency": 780,
-      "show": { "name": "The Shadow", "searchQuery": "The Shadow radio show" }
+      "show": { "name": "The Shadow", "archiveId": "the-shadow-1938-10-09-141-death-stalks-the-shadow", "searchQuery": "The Shadow radio show" }
     },
     {
       "id": "fixed-gunsmoke",
       "type": "fixed",
       "name": "Gunsmoke",
       "frequency": 820,
-      "show": { "name": "Gunsmoke", "searchQuery": "Gunsmoke CBS radio western" }
+      "show": { "name": "Gunsmoke", "archiveId": "OTRR_Gunsmoke_Singles", "searchQuery": "Gunsmoke CBS radio western" }
     },
     {
       "id": "fixed-johnnydollar",
       "type": "fixed",
       "name": "Yours Truly Johnny Dollar",
       "frequency": 860,
-      "show": { "name": "Yours Truly Johnny Dollar", "searchQuery": "Johnny Dollar radio" }
+      "show": { "name": "Yours Truly Johnny Dollar", "archiveId": "OTRR_YoursTrulyJohnnyDollar_Singles", "searchQuery": "Johnny Dollar radio" }
     }
   ]
 }

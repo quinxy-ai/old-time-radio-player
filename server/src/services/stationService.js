@@ -8,6 +8,35 @@ const stationsData = JSON.parse(
   readFileSync(join(__dir, '../data/stations.json'), 'utf8')
 );
 
+const STOPWORDS = new Set([
+  'the', 'and', 'for', 'with', 'your', 'truly', 'from', 'this', 'that',
+  'radio', 'show', 'program', 'theatre', 'theater', 'hour', 'time',
+  'nbc', 'cbs', 'abc', 'bbc', 'otr', 'old', 'new',
+]);
+
+// Keep only episodes whose title or filename contains at least one keyword from showName.
+// Falls back to unfiltered list if the result would be too sparse.
+function filterByShow(episodes, showName) {
+  const keywords = showName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter((w) => w.length > 2 && !STOPWORDS.has(w));
+
+  if (keywords.length === 0) return episodes;
+
+  const filtered = episodes.filter((ep) => {
+    const filename = ep.id.includes('/') ? ep.id.split('/').pop() : ep.id;
+    const text = `${ep.title} ${filename}`.toLowerCase();
+    return keywords.some((kw) => text.includes(kw));
+  });
+
+  // Only use filtered list if it's at least 15% of source or 5+ episodes
+  return filtered.length >= Math.max(5, Math.floor(episodes.length * 0.15))
+    ? filtered
+    : episodes;
+}
+
 export function getStations() {
   return stationsData.stations.map((s) => ({
     id: s.id,
@@ -50,11 +79,22 @@ async function buildFixedQueue(station) {
   const show = station.show;
   if (!show) return [];
   try {
-    const identifiers = await searchShow(show.searchQuery, 3);
-    if (identifiers.length === 0) return [];
-    const episodes = await getEpisodes(identifiers[0]);
-    // Sort alphabetically by title for approximate episode order
-    const sorted = [...episodes].sort((a, b) => a.title.localeCompare(b.title));
+    let identifier;
+    if (show.archiveId) {
+      // Use hardcoded identifier — guaranteed to be the right show, no filtering needed
+      identifier = show.archiveId;
+      console.log(`[OTR] ${show.name} | using hardcoded archiveId: ${identifier}`);
+    } else {
+      const identifiers = await searchShow(show.searchQuery, 3);
+      if (identifiers.length === 0) return [];
+      identifier = identifiers[0];
+      console.log(`[OTR] ${show.name} | search returned identifiers:`, identifiers);
+    }
+    const episodes = await getEpisodes(identifier);
+    console.log(`[OTR] ${show.name} | episodes: ${episodes.length}`);
+    // Only filter when we got the identifier from search (may be a compilation)
+    const list = show.archiveId ? episodes : filterByShow(episodes, show.name);
+    const sorted = [...list].sort((a, b) => a.title.localeCompare(b.title));
     return sorted.map((ep) => ({ ...ep, showName: show.name }));
   } catch (err) {
     console.error(`Fixed queue: failed to load ${show.name}:`, err.message);
@@ -76,9 +116,9 @@ async function buildGenreQueue(station) {
       const identifiers = await searchShow(show.searchQuery, 1);
       if (identifiers.length === 0) continue;
       const episodes = await getEpisodes(identifiers[0]);
-      // Tag each episode with its show name
+      const filtered = filterByShow(episodes, show.name);
       allEpisodes.push(
-        ...episodes.map((ep) => ({ ...ep, showName: show.name }))
+        ...filtered.map((ep) => ({ ...ep, showName: show.name }))
       );
     } catch (err) {
       console.error(`Failed to load ${show.name}:`, err.message);
@@ -101,7 +141,8 @@ async function buildMiscQueue(allStations) {
       const identifiers = await searchShow(randomShow.searchQuery, 1);
       if (identifiers.length === 0) continue;
       const episodes = await getEpisodes(identifiers[0]);
-      const sampled = episodes
+      const filtered = filterByShow(episodes, randomShow.name);
+      const sampled = filtered
         .sort(() => Math.random() - 0.5)
         .slice(0, 5)
         .map((ep) => ({ ...ep, showName: randomShow.name }));

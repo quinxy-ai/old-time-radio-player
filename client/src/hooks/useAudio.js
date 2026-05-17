@@ -118,6 +118,7 @@ export function useAudio({ bufferingStatic = true } = {}) {
     isBufferingRef.current = true; // assume buffering until 'playing' fires
     setIsBuffering(true);
     const wasPlaying = isPlaying;
+    console.log(`[OTR] Audio load: "${currentEpisode.title}" | url: ${currentEpisode.url}`);
     audio.src = currentEpisode.url;
     audio.load();
     if (wasPlaying) audio.play().catch(() => {});

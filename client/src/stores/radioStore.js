@@ -9,6 +9,8 @@ const STORAGE_KEY_DIAL      = 'otr_dial_position';
 const STORAGE_KEY_FAVORITES = 'otr_favorites';
 const STORAGE_KEY_PROGRESS  = 'otr_station_progress';
 const STORAGE_KEY_MODE      = 'otr_dial_mode';
+const STORAGE_KEY_SCHEMA    = 'otr_schema_v';
+const SCHEMA_VERSION        = 5; // bump to wipe corrupted station progress
 
 function positionToFreq(pos) {
   return FREQ_MIN + pos * (FREQ_MAX - FREQ_MIN);
@@ -57,6 +59,12 @@ function calcSignal(frequency, stations) {
 
 function loadPersistedState() {
   try {
+    // Clear corrupted station progress from schema versions before episode-queue fix
+    const schemaVersion = parseInt(localStorage.getItem(STORAGE_KEY_SCHEMA) ?? '1');
+    if (schemaVersion < SCHEMA_VERSION) {
+      localStorage.removeItem(STORAGE_KEY_PROGRESS);
+      localStorage.setItem(STORAGE_KEY_SCHEMA, String(SCHEMA_VERSION));
+    }
     return {
       dialPosition:    parseFloat(localStorage.getItem(STORAGE_KEY_DIAL) ?? '0.5'),
       favorites:       JSON.parse(localStorage.getItem(STORAGE_KEY_FAVORITES) ?? '[]'),
@@ -144,10 +152,14 @@ export const useRadioStore = create((set, get) => ({
     set({ stationProgress: updated });
   },
 
-  getSavedProgress(stationId) {
+  getSavedProgress(stationId, expectedShowName) {
     const { stationProgress } = get();
     const saved = stationProgress[stationId];
     if (!saved || typeof saved === 'number' || !saved.queue?.length) return null;
+    if (expectedShowName) {
+      const matches = saved.queue.filter((ep) => ep.showName === expectedShowName).length;
+      if (matches / saved.queue.length < 0.5) return null; // discard corrupted progress
+    }
     return saved;
   },
 

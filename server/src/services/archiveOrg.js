@@ -6,11 +6,12 @@ const METADATA_BASE = 'https://archive.org/metadata';
 function cleanTitle(rawTitle, filename) {
   const base = rawTitle ?? filename.replace(/\.[^.]+$/, '');
   const cleaned = base
-    .replace(/\b\d+[Hh]\d*[Mm]?\d*[Ss]?\b/g, '')  // 1H02M, 29M37S
-    .replace(/\b\d+[Mm]\d*[Ss]?\b/g, '')             // 29M, 04M30S
-    .replace(/\b\d+[Ss]\b/g, '')                      // 45S
-    .replace(/^\s*\d+\)\s*/,'')                        // leading "4) "
-    .replace(/\(\s*\)/g, '')                           // empty parens
+    .replace(/\s*\(\d{2,3}\s+\d{2}\)\s*\d*/g, '')   // (128 44) 28455 — bitrate/size metadata
+    .replace(/\b\d+[Hh]\d*[Mm]?\d*[Ss]?\b/g, '')    // 1H02M, 29M37S
+    .replace(/\b\d+[Mm]\d*[Ss]?\b/g, '')              // 29M, 04M30S
+    .replace(/\b\d+[Ss]\b/g, '')                       // 45S
+    .replace(/^\s*\d+\)\s*/,'')                         // leading "4) "
+    .replace(/\(\s*\)/g, '')                            // empty parens
     .replace(/[-_]+/g, ' ')
     .replace(/\s{2,}/g, ' ')
     .trim();
@@ -83,6 +84,7 @@ export async function getEpisodes(identifier) {
     'Ogg Vorbis', '128Kbps OGG', 'VBR OGG',
   ]);
 
+  const seen = new Set();
   const episodes = (data.files ?? [])
     .filter((f) => AUDIO_FORMATS.has(f.format))
     .filter((f) => {
@@ -95,7 +97,12 @@ export async function getEpisodes(identifier) {
       url: `https://archive.org/download/${identifier}/${encodeURIComponent(f.name)}`,
       duration: parseFloat(f.length ?? '0'),
       archiveId: identifier,
-    }));
+    }))
+    .filter((ep) => {
+      if (seen.has(ep.title)) return false;
+      seen.add(ep.title);
+      return true;
+    });
 
   toCache(cacheKey, episodes);
   return episodes;
