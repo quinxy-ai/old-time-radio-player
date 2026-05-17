@@ -10,7 +10,7 @@ const STORAGE_KEY_FAVORITES = 'otr_favorites';
 const STORAGE_KEY_PROGRESS  = 'otr_station_progress';
 const STORAGE_KEY_MODE      = 'otr_dial_mode';
 const STORAGE_KEY_SCHEMA    = 'otr_schema_v';
-const SCHEMA_VERSION        = 5; // bump to wipe corrupted station progress
+const SCHEMA_VERSION        = 6; // bump to wipe corrupted station progress
 
 function positionToFreq(pos) {
   return FREQ_MIN + pos * (FREQ_MAX - FREQ_MIN);
@@ -145,51 +145,52 @@ export const useRadioStore = create((set, get) => ({
   setIsBuffering(buffering)     { set({ isBuffering: buffering }); },
   setVolume(vol)                { set({ volume: Math.max(0, Math.min(1, vol)) }); },
 
-  saveStationProgress(stationId, queue, index) {
+  saveStationProgress(stationId, episodeId, showName) {
+    if (!episodeId) return;
     const { stationProgress } = get();
-    const updated = { ...stationProgress, [stationId]: { index, queue } };
-    localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(updated));
+    const updated = { ...stationProgress, [stationId]: { episodeId, showName } };
+    try {
+      localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(updated));
+    } catch {
+      // Quota exceeded — clear all progress and try again with just this entry
+      try {
+        const fresh = { [stationId]: { episodeId, showName } };
+        localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(fresh));
+        set({ stationProgress: fresh });
+        return;
+      } catch { return; }
+    }
     set({ stationProgress: updated });
   },
 
   getSavedProgress(stationId, expectedShowName) {
     const { stationProgress } = get();
     const saved = stationProgress[stationId];
-    if (!saved || typeof saved === 'number' || !saved.queue?.length) return null;
-    if (expectedShowName) {
-      const matches = saved.queue.filter((ep) => ep.showName === expectedShowName).length;
-      if (matches / saved.queue.length < 0.5) return null; // discard corrupted progress
-    }
+    if (!saved || !saved.episodeId) return null;
+    if (expectedShowName && saved.showName && saved.showName !== expectedShowName) return null;
     return saved;
   },
 
   skipNext() {
-    const { episodeQueue, episodeIndex, currentStation, stationProgress } = get();
+    const { episodeQueue, episodeIndex, currentStation } = get();
     if (!episodeQueue.length) return;
     const nextIndex = (episodeIndex + 1) % episodeQueue.length;
     const episode = episodeQueue[nextIndex];
     if (currentStation && (currentStation.type === 'genre' || currentStation.type === 'fixed')) {
-      const progress = { ...stationProgress, [currentStation.id]: { index: nextIndex, queue: episodeQueue } };
-      localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(progress));
-      set({ episodeIndex: nextIndex, currentEpisode: episode, stationProgress: progress });
-    } else {
-      set({ episodeIndex: nextIndex, currentEpisode: episode });
+      get().saveStationProgress(currentStation.id, episode.id, episode.showName);
     }
+    set({ episodeIndex: nextIndex, currentEpisode: episode });
   },
 
   skipPrev() {
-    const { episodeQueue, episodeIndex, currentStation, stationProgress } = get();
+    const { episodeQueue, episodeIndex, currentStation } = get();
     if (!episodeQueue.length) return;
     const prevIndex = episodeIndex <= 0 ? episodeQueue.length - 1 : episodeIndex - 1;
     const episode = episodeQueue[prevIndex];
-    // Only fixed stations allow skip-back with persistence; genre stations skip-back is disabled in UI
     if (currentStation && currentStation.type === 'fixed') {
-      const progress = { ...stationProgress, [currentStation.id]: { index: prevIndex, queue: episodeQueue } };
-      localStorage.setItem(STORAGE_KEY_PROGRESS, JSON.stringify(progress));
-      set({ episodeIndex: prevIndex, currentEpisode: episode, stationProgress: progress });
-    } else {
-      set({ episodeIndex: prevIndex, currentEpisode: episode });
+      get().saveStationProgress(currentStation.id, episode.id, episode.showName);
     }
+    set({ episodeIndex: prevIndex, currentEpisode: episode });
   },
 
   toggleFavorite() {

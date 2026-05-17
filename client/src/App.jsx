@@ -82,8 +82,8 @@ export default function App() {
       prevStationRef.current.id !== currentStation?.id &&
       (prevStationRef.current.type === 'genre' || prevStationRef.current.type === 'fixed')
     ) {
-      const { episodeQueue, episodeIndex } = useRadioStore.getState();
-      saveStationProgress(prevStationRef.current.id, episodeQueue, episodeIndex);
+      const { currentEpisode } = useRadioStore.getState();
+      saveStationProgress(prevStationRef.current.id, currentEpisode?.id, currentEpisode?.showName);
     }
     prevStationRef.current = currentStation;
 
@@ -106,23 +106,21 @@ export default function App() {
       return;
     }
 
-    // Restore saved position for genre and fixed stations
-    if (currentStation.type === 'genre' || currentStation.type === 'fixed') {
+    // Find the saved episode position within a freshly-loaded queue
+    function startIndex(episodes) {
       const expectedShow = currentStation.type === 'fixed' ? currentStation.name : null;
       const saved = getSavedProgress(currentStation.id, expectedShow);
-      if (saved) {
-        console.log(`[OTR] Station: ${currentStation.name} | source: saved-progress (index ${saved.index}) | episodes:`, saved.queue.map(e => e.title));
-        setEpisodeQueue(saved.queue, saved.index);
-        setIsPlaying(true);
-        return;
-      }
+      if (!saved?.episodeId) return 0;
+      const idx = episodes.findIndex((ep) => ep.id === saved.episodeId);
+      return idx >= 0 ? idx : 0;
     }
 
     // Use pre-fetched cache if available — skips API round-trip
     const cached = prefetchCacheRef.current[currentStation.id];
     if (cached?.length > 0) {
-      console.log(`[OTR] Station: ${currentStation.name} | source: prefetch-cache | episodes:`, cached.map(e => e.title));
-      setEpisodeQueue(cached);
+      const idx = startIndex(cached);
+      console.log(`[OTR] Station: ${currentStation.name} | source: prefetch-cache | start: ${idx} | episodes:`, cached.map(e => e.title));
+      setEpisodeQueue(cached, idx);
       setIsPlaying(true);
       return;
     }
@@ -134,9 +132,10 @@ export default function App() {
       .then((episodes) => {
         if (loadEpochRef.current !== epoch) return; // tuned away before fetch completed
         if (episodes.length > 0) {
-          console.log(`[OTR] Station: ${currentStation.name} | source: api-fetch | episodes:`, episodes.map(e => e.title));
+          const idx = startIndex(episodes);
+          console.log(`[OTR] Station: ${currentStation.name} | source: api-fetch | start: ${idx} | episodes:`, episodes.map(e => e.title));
           prefetchCacheRef.current[stationIdAtLoad] = episodes;
-          setEpisodeQueue(episodes);
+          setEpisodeQueue(episodes, idx);
           setIsPlaying(true);
         }
       })
