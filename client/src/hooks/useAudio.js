@@ -68,7 +68,10 @@ export function useAudio({ bufferingStatic = true } = {}) {
 
     const onEnded   = () => skipNext();
     const onPlay    = () => setIsPlaying(true);
-    const onPause   = () => setIsPlaying(false);
+    // Don't treat a natural track-end as a pause — the ended event handles
+    // advancement via skipNext; setting isPlaying false here would prevent
+    // the next episode from auto-starting.
+    const onPause   = () => { if (!audioRef.current?.ended) setIsPlaying(false); };
     const onWaiting = () => {
       isBufferingRef.current = true;
       setIsBuffering(true);
@@ -104,6 +107,14 @@ export function useAudio({ bufferingStatic = true } = {}) {
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Play helper — resets isPlaying to false when browser blocks autoplay
+  // (NotAllowedError), so the UI doesn't show "playing" when no audio runs.
+  const safePlay = useCallback((audio) => {
+    audio.play().catch((err) => {
+      if (err.name === 'NotAllowedError') setIsPlaying(false);
+    });
+  }, [setIsPlaying]);
+
   // Load new episode
   useEffect(() => {
     const audio = audioRef.current;
@@ -121,7 +132,7 @@ export function useAudio({ bufferingStatic = true } = {}) {
     console.log(`[OTR] Audio load: "${currentEpisode.title}" | url: ${currentEpisode.url}`);
     audio.src = currentEpisode.url;
     audio.load();
-    if (wasPlaying) audio.play().catch(() => {});
+    if (wasPlaying) safePlay(audio);
   }, [currentEpisode?.url]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Zone-aware crossfade — runs on signal or volume change
@@ -134,7 +145,7 @@ export function useAudio({ bufferingStatic = true } = {}) {
     const audio = audioRef.current;
     if (!audio || !currentEpisode) return;
     if (isPlaying) {
-      audio.play().catch(() => {});
+      safePlay(audio);
     } else {
       audio.pause();
     }
