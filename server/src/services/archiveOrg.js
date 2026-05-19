@@ -80,7 +80,7 @@ export async function getEpisodes(identifier) {
   const data = await response.json();
 
   const AUDIO_FORMATS = new Set([
-    'VBR MP3', '128Kbps MP3', '64Kbps MP3', '32Kbps MP3', 'MP3',
+    'VBR MP3', '128Kbps MP3', '64Kbps MP3', '32Kbps MP3', '24Kbps MP3', 'MP3',
     'Ogg Vorbis', '128Kbps OGG', 'VBR OGG',
   ]);
 

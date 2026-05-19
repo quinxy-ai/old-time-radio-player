@@ -188,6 +188,13 @@
       "name": "Yours Truly Johnny Dollar",
       "frequency": 860,
       "show": { "name": "Yours Truly Johnny Dollar", "archiveId": "OTRR_YoursTrulyJohnnyDollar_Singles", "searchQuery": "Johnny Dollar radio" }
+    },
+    {
+      "id": "fixed-speedgibson",
+      "type": "fixed",
+      "name": "Speed Gibson",
+      "frequency": 880,
+      "show": { "name": "Speed Gibson of the International Secret Police", "archiveId": "Speed_Gibson_Of_The_International_Secret_Police", "searchQuery": "Speed Gibson International Secret Police radio" }
     }
   ]
 }
