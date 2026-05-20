@@ -97,7 +97,10 @@ async function buildFixedQueue(station) {
     console.log(`[OTR] ${show.name} | episodes: ${episodes.length}`);
     // Only filter when we got the identifier from search (may be a compilation)
     const list = show.archiveId ? episodes : filterByShow(episodes, show.name);
-    const sorted = [...list].sort((a, b) => a.title.localeCompare(b.title));
+    // Natural sort: numeric substrings compared by value so "Ep 2" < "Ep 10"
+    const sorted = [...list].sort((a, b) =>
+      a.title.localeCompare(b.title, undefined, { numeric: true, sensitivity: 'base' })
+    );
     return sorted.map((ep) => ({ ...ep, showName: show.name }));
   } catch (err) {
     console.error(`Fixed queue: failed to load ${show.name}:`, err.message);
