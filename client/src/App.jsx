@@ -179,6 +179,7 @@ export default function App() {
         canSkipPrev={canSkipPrev}
         sleepLabel={sleepLabel}
         sleepActive={Boolean(sleepLabel)}
+        showTooltips={settings.showTooltips}
         onVolumeChange={setVolume}
         onTuneKnobDelta={handleTuneKnobDelta}
         onSkipNext={skipNext}

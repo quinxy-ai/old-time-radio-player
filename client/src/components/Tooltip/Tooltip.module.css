@@ -1,0 +1,36 @@
+.wrapper {
+  position: relative;
+}
+
+.bubble {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+
+  background: #1c0e04;
+  color: #c8961f;
+  border: 1px solid #6b4810;
+  border-radius: 3px;
+  padding: 5px 10px;
+
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 200;
+
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.7);
+}
+
+/* Downward arrow pointing at the hovered element */
+.bubble::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #6b4810;
+}

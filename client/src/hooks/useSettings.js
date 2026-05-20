@@ -6,6 +6,7 @@ const DEFAULTS = {
   dialSensitivity: 'normal', // 'slow' | 'normal' | 'fast'
   sleepMinutes:    30,        // 15 | 30 | 45 | 60
   bufferingStatic: true,      // keep static floor while stream buffers
+  showTooltips:    true,      // show hover tooltips after 2 s
 };
 
 function load() {

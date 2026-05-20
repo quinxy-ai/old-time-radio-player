@@ -283,7 +283,19 @@
   box-shadow:
     inset 0 2px 5px rgba(0,0,0,0.7),
     0 1px 0 rgba(255,200,60,0.06);
-  overflow: hidden;
+  /* No overflow:hidden — lets tooltip bubbles escape the container.
+     Corner-clipping is handled by border-radius on the first/last buttons. */
+}
+
+/* Round the outer corners of the first and last mode buttons (handles both
+   direct button children and Tooltip wrapper divs containing the button). */
+.modeToggle > .modeBtn:first-child,
+.modeToggle > :first-child > .modeBtn {
+  border-radius: 4px 0 0 4px;
+}
+.modeToggle > .modeBtn:last-child,
+.modeToggle > :last-child > .modeBtn {
+  border-radius: 0 4px 4px 0;
 }
 
 .modeBtn {

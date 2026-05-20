@@ -3,6 +3,7 @@ import { SpeakerGrill } from '../SpeakerGrill/SpeakerGrill.jsx';
 import { Dial } from '../Dial/Dial.jsx';
 import { Knob } from '../Knob/Knob.jsx';
 import { NixieDisplay } from '../NixieDisplay/NixieDisplay.jsx';
+import { Tooltip } from '../Tooltip/Tooltip.jsx';
 import { useClickSound } from '../../hooks/useClickSound.js';
 import styles from './Radio.module.css';
 
@@ -26,6 +27,7 @@ export function Radio({
   canSkipPrev,
   sleepLabel,
   sleepActive,
+  showTooltips,
   onSleepCancel,
   onVolumeChange,
   onTuneKnobDelta,
@@ -37,6 +39,7 @@ export function Radio({
   onSleep,
   onOpenSettings,
 }) {
+  const tt = showTooltips; // shorthand
   const { playClick, playBuzzer } = useClickSound();
   const sleepPressTimer  = useRef(null);
   const sleepDidLongPress = useRef(false);
@@ -117,20 +120,24 @@ export function Radio({
       {/* Dial mode toggle — GNR / SHW — sits just below the dial */}
       <div className={styles.modeToggleRow}>
         <div className={styles.modeToggle}>
-          <button
-            className={`${styles.modeBtn} ${dialMode === 'genre' ? styles.modeBtnActive : ''}`}
-            onClick={() => { playClick(); if (dialMode !== 'genre') onToggleDialMode(); }}
-            aria-label="Genre station mode"
-          >
-            GNR
-          </button>
-          <button
-            className={`${styles.modeBtn} ${dialMode === 'fixed' ? styles.modeBtnActive : ''}`}
-            onClick={() => { playClick(); if (dialMode !== 'fixed') onToggleDialMode(); }}
-            aria-label="Fixed show mode"
-          >
-            SHW
-          </button>
+          <Tooltip text="Genre mode — tune across themed stations: Mystery, Comedy, Western, and more" enabled={tt}>
+            <button
+              className={`${styles.modeBtn} ${dialMode === 'genre' ? styles.modeBtnActive : ''}`}
+              onClick={() => { playClick(); if (dialMode !== 'genre') onToggleDialMode(); }}
+              aria-label="Genre station mode"
+            >
+              GNR
+            </button>
+          </Tooltip>
+          <Tooltip text="Show mode — each dial position plays one classic show from the start" enabled={tt}>
+            <button
+              className={`${styles.modeBtn} ${dialMode === 'fixed' ? styles.modeBtnActive : ''}`}
+              onClick={() => { playClick(); if (dialMode !== 'fixed') onToggleDialMode(); }}
+              aria-label="Fixed show mode"
+            >
+              SHW
+            </button>
+          </Tooltip>
         </div>
       </div>
 
@@ -139,38 +146,38 @@ export function Radio({
 
       {/* Knob row */}
       <div className={styles.knobRow}>
-        <div className={styles.knobCol}>
+        <Tooltip text="Volume" enabled={tt} className={styles.knobCol}>
           <Knob
             label="VOL"
             value={volume}
             size={VOL_SIZE}
             onDelta={(d) => onVolumeChange(volume + d * 0.8)}
           />
-        </div>
+        </Tooltip>
 
-        <div className={styles.knobCol}>
+        <Tooltip text="Fine Tune — drag to sweep the dial with precision" enabled={tt} className={styles.knobCol}>
           <Knob
             label="TUNE"
             value={dialPosition}
             size={TUNE_SIZE}
             onDelta={onTuneKnobDelta}
           />
-        </div>
+        </Tooltip>
 
-        <div className={styles.knobCol}>
+        <Tooltip text="Favourites — save or remove this episode" enabled={tt} className={styles.knobCol}>
           <button
             className={`${styles.favBtn} ${isFavorite ? styles.favBtnOn : ''}`}
             onClick={handleToggleFavorite}
             aria-label={isFavorite ? 'Remove from favourites' : 'Add to favourites'}
           />
           <span className={styles.knobLabel}>FAV</span>
-        </div>
+        </Tooltip>
       </div>
 
       {/* Transport row — SLP (under VOL) | PRV PSE NXT | SET (under FAV) */}
       <div className={styles.transportRow}>
         {/* SLP — left column, aligns under VOL */}
-        <div className={styles.transportWrap}>
+        <Tooltip text="Sleep Timer — tap to add time, long-press to cancel" enabled={tt} className={styles.transportWrap}>
           <button
             className={`${styles.transportBtn} ${sleepActive ? styles.transportBtnSleep : ''}`}
             onPointerDown={handleSleepPointerDown}
@@ -179,19 +186,19 @@ export function Radio({
             aria-label={sleepActive ? `Sleep: ${sleepLabel} — long press to cancel` : 'Start sleep timer'}
           />
           <span className={styles.transportLabel}>SLP</span>
-        </div>
+        </Tooltip>
 
         {/* PRV PSE NXT — centre column */}
         <div className={styles.transportCenter}>
-          <div className={styles.transportWrap}>
+          <Tooltip text="Previous Episode" enabled={tt} className={styles.transportWrap}>
             <button
               className={`${styles.transportBtn} ${!canSkipPrev ? styles.transportBtnDisabled : ''}`}
               onClick={handleSkipPrev}
               aria-label="Previous track"
             />
             <span className={styles.transportLabel}>PRV</span>
-          </div>
-          <div className={styles.transportWrap}>
+          </Tooltip>
+          <Tooltip text="Play / Pause" enabled={tt} className={styles.transportWrap}>
             <button
               className={`${styles.transportBtn} ${isPlaying ? styles.transportBtnActive : ''}`}
               onClick={handleTogglePlay}
@@ -199,8 +206,8 @@ export function Radio({
               aria-label={isPlaying ? 'Pause' : 'Play'}
             />
             <span className={styles.transportLabel}>PSE</span>
-          </div>
-          <div className={styles.transportWrap}>
+          </Tooltip>
+          <Tooltip text="Next Episode" enabled={tt} className={styles.transportWrap}>
             <button
               className={styles.transportBtn}
               onClick={handleSkipNext}
@@ -208,18 +215,18 @@ export function Radio({
               aria-label="Next track"
             />
             <span className={styles.transportLabel}>NXT</span>
-          </div>
+          </Tooltip>
         </div>
 
         {/* SET — right column, aligns under FAV */}
-        <div className={styles.transportWrap}>
+        <Tooltip text="Settings" enabled={tt} className={styles.transportWrap}>
           <button
             className={styles.transportBtn}
             onClick={handleOpenSettings}
             aria-label="Open settings"
           />
           <span className={styles.transportLabel}>SET</span>
-        </div>
+        </Tooltip>
       </div>
 
       {/* Speaker grill — hidden on short screens via CSS */}

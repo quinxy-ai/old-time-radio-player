@@ -72,6 +72,25 @@ export function SettingsDialog({ settings, onUpdate, onClose }) {
               </button>
             </div>
           </fieldset>
+
+          {/* Tooltips */}
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.legend}>BUTTON TOOLTIPS</legend>
+            <div className={styles.btnGroup}>
+              <button
+                className={`${styles.optBtn} ${settings.showTooltips ? styles.optBtnActive : ''}`}
+                onClick={() => onUpdate({ showTooltips: true })}
+              >
+                ON
+              </button>
+              <button
+                className={`${styles.optBtn} ${!settings.showTooltips ? styles.optBtnActive : ''}`}
+                onClick={() => onUpdate({ showTooltips: false })}
+              >
+                OFF
+              </button>
+            </div>
+          </fieldset>
         </div>
       </div>
     </div>
