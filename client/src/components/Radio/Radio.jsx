@@ -129,7 +129,7 @@ export function Radio({
               GNR
             </button>
           </Tooltip>
-          <Tooltip text="Show mode — each dial position plays one classic show from the start" enabled={tt}>
+          <Tooltip text="Show mode — each dial position is a dedicated station for one classic show, playing episodes in order and resuming where you left off" enabled={tt}>
             <button
               className={`${styles.modeBtn} ${dialMode === 'fixed' ? styles.modeBtnActive : ''}`}
               onClick={() => { playClick(); if (dialMode !== 'fixed') onToggleDialMode(); }}
