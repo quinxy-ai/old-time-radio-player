@@ -28,6 +28,7 @@ export function Radio({
   sleepLabel,
   sleepActive,
   showTooltips,
+  showNixie,
   onSleepCancel,
   onVolumeChange,
   onTuneKnobDelta,
@@ -106,7 +107,7 @@ export function Radio({
   return (
     <div className={styles.cabinet}>
       {/* Nixie tube display — above the dial */}
-      <NixieDisplay line1={nixieLine1} line2={nixieLine2} rightLabel={sleepLabel ?? ''} />
+      {showNixie && <NixieDisplay line1={nixieLine1} line2={nixieLine2} rightLabel={sleepLabel ?? ''} />}
 
       {/* Large round tuning dial */}
       <Dial

@@ -180,6 +180,7 @@ export default function App() {
         sleepLabel={sleepLabel}
         sleepActive={Boolean(sleepLabel)}
         showTooltips={settings.showTooltips}
+        showNixie={settings.showNixie}
         onVolumeChange={setVolume}
         onTuneKnobDelta={handleTuneKnobDelta}
         onSkipNext={skipNext}

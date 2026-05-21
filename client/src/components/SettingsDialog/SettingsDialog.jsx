@@ -73,6 +73,25 @@ export function SettingsDialog({ settings, onUpdate, onClose }) {
             </div>
           </fieldset>
 
+          {/* Nixie Display */}
+          <fieldset className={styles.fieldset}>
+            <legend className={styles.legend}>NIXIE DISPLAY</legend>
+            <div className={styles.btnGroup}>
+              <button
+                className={`${styles.optBtn} ${settings.showNixie ? styles.optBtnActive : ''}`}
+                onClick={() => onUpdate({ showNixie: true })}
+              >
+                ON
+              </button>
+              <button
+                className={`${styles.optBtn} ${!settings.showNixie ? styles.optBtnActive : ''}`}
+                onClick={() => onUpdate({ showNixie: false })}
+              >
+                OFF
+              </button>
+            </div>
+          </fieldset>
+
           {/* Tooltips */}
           <fieldset className={styles.fieldset}>
             <legend className={styles.legend}>BUTTON TOOLTIPS</legend>
